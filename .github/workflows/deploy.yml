@@ -95,8 +95,11 @@ jobs:
         # Apply Kubernetes manifests
         kubectl apply -f k8s/ -n ${{ env.NAMESPACE }}
         
+        # Force restart deployment to ensure clean rollout
+        kubectl rollout restart deployment/kubeopt-website -n ${{ env.NAMESPACE }}
+        
         # Wait for deployment to be ready
-        kubectl rollout status deployment/kubeopt-website -n ${{ env.NAMESPACE }} --timeout=300s
+        kubectl rollout status deployment/kubeopt-website -n ${{ env.NAMESPACE }} --timeout=600s
 
     - name: Get service info
       run: |
