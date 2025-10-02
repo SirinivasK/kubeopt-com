@@ -60,6 +60,18 @@ jobs:
       run: |
         az aks get-credentials --resource-group ${{ env.AKS_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }}
 
+    - name: Install kubelogin
+      run: |
+        # Download and install kubelogin
+        curl -LO https://github.com/Azure/kubelogin/releases/download/v0.0.32/kubelogin-linux-amd64.zip
+        unzip kubelogin-linux-amd64.zip
+        sudo mv bin/linux_amd64/kubelogin /usr/local/bin/
+        rm -rf kubelogin-linux-amd64.zip bin/
+
+    - name: Convert kubeconfig for Azure AD
+      run: |
+        kubelogin convert-kubeconfig -l azurecli
+
     - name: Create namespace if not exists
       run: |
         kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
