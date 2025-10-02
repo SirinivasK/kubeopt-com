@@ -9,7 +9,6 @@ metadata:
     app.kubernetes.io/component: ingress
   annotations:
     # NGINX Ingress Controller annotations
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
@@ -39,6 +38,7 @@ metadata:
     # Azure specific annotations
     service.beta.kubernetes.io/azure-load-balancer-resource-group: "MC_rg-kubeopt-com_aks-kubeopt-com_eastus"
 spec:
+  ingressClassName: nginx
   tls:
   - hosts:
     - kubeopt.com

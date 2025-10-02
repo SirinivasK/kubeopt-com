@@ -121,6 +121,7 @@ jobs:
           -var="acr_name=acrkubeoptioprod" \
           -var="domain_name=kubeopt.com" \
           -var="contact_email=admin@kubeopt.com" \
+          -var="github_actions_service_principal_id=${{ secrets.GH_ACTIONS_SP_ID }}" \
           -out=tfplan
           
     - name: Upload Terraform Plan
@@ -167,7 +168,8 @@ jobs:
           -var="cluster_name=aks-kubeopt-com-prod" \
           -var="acr_name=acrkubeoptioprod" \
           -var="domain_name=kubeopt.com" \
-          -var="contact_email=admin@kubeopt.com"
+          -var="contact_email=admin@kubeopt.com" \
+          -var="github_actions_service_principal_id=${{ secrets.GH_ACTIONS_SP_ID }}"
           
     - name: Save Terraform Outputs
       working-directory: ${{ env.TF_WORKING_DIR }}
@@ -231,7 +233,8 @@ jobs:
           -var="cluster_name=aks-kubeopt-com-prod" \
           -var="acr_name=acrkubeoptioprod" \
           -var="domain_name=kubeopt.com" \
-          -var="contact_email=admin@kubeopt.com"
+          -var="contact_email=admin@kubeopt.com" \
+          -var="github_actions_service_principal_id=${{ secrets.GH_ACTIONS_SP_ID }}"
           
     - name: Confirm Destruction
       run: echo "🗑️ Infrastructure has been destroyed!"

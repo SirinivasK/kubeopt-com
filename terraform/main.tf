@@ -168,6 +168,14 @@ resource "azurerm_role_assignment" "aks_acr_pull" {
   skip_service_principal_aad_check = true
 }
 
+# Role assignment for GitHub Actions service principal to manage AKS cluster
+resource "azurerm_role_assignment" "github_actions_aks_admin" {
+  count                = var.github_actions_service_principal_id != "" ? 1 : 0
+  principal_id         = var.github_actions_service_principal_id
+  role_definition_name = "Azure Kubernetes Service RBAC Cluster Admin"
+  scope                = azurerm_kubernetes_cluster.kubeopt.id
+}
+
 # Public IP for Load Balancer (for kubeopt.com domain)
 resource "azurerm_public_ip" "kubeopt" {
   name                = "${var.cluster_name}-public-ip"
