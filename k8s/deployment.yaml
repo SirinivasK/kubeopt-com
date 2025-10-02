@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
       - name: kubeopt-website
-        image: kubeopt-website:latest
+        image: acrkubeoptioprod.azurecr.io/kubeopt-com:amd64
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
@@ -86,16 +86,13 @@ spec:
         - name: logs-volume
           mountPath: /app/logs
         securityContext:
-          runAsNonRoot: true
-          runAsUser: 1000
-          runAsGroup: 1000
+          runAsUser: 0
+          runAsGroup: 0
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: false
           capabilities:
             drop:
             - ALL
-            add:
-            - NET_BIND_SERVICE
       volumes:
       - name: database-volume
         persistentVolumeClaim:
