@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
       - name: kubeopt-website
-        image: {{IMAGE_TAG}}  # This will be replaced by GitHub Actions
+        image: kubeopt-website:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
