@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
       - name: kubeopt-website
-        image: acrkubeoptioprod.azurecr.io/kubeopt-com:amd64
+        image: {{IMAGE_TAG}}
         imagePullPolicy: Always
         ports:
         - containerPort: 5000

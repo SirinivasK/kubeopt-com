@@ -2,6 +2,12 @@
 
 A professional marketing and information website for the kubeopt AKS cost optimization tool. This Flask-based website showcases your containerized ML-driven Kubernetes optimizer.
 
+## 🌐 **Live Website**
+**URL**: [https://kubeopt.com](https://kubeopt.com)  
+**Status**: ✅ **LIVE & DEPLOYED**  
+**Infrastructure**: Azure Kubernetes Service (AKS)  
+**External IP**: `172.199.86.63`
+
 ## 🚀 Features
 
 - **Modern Dark Blue Theme** - Professional and technical aesthetic
@@ -201,9 +207,121 @@ The website includes interactive dashboard previews that simulate your actual to
 - Update social links in `templates/base.html`
 - Modify meta tags and titles
 
-## 🚀 Deployment Options
+## 🚀 Production Deployment (Azure Kubernetes Service)
 
-### 1. Traditional Hosting (VPS/Dedicated)
+### **Current Production Setup**
+The website is deployed on Azure Kubernetes Service (AKS) with the following architecture:
+
+```
+GoDaddy DNS (kubeopt.com) → Azure Load Balancer (172.199.86.63) → NGINX Ingress → AKS Cluster → kubeopt-website Pod
+```
+
+### **Infrastructure Components**
+- **AKS Cluster**: `aks-kubeopt-com-prod` in West Europe
+- **Container Registry**: `acrkubeoptioprod.azurecr.io`
+- **Image**: `acrkubeoptioprod.azurecr.io/kubeopt-com:amd64`
+- **Ingress Controller**: NGINX with Let's Encrypt SSL
+- **External IP**: `172.199.86.63`
+
+### **Deployment Architecture**
+```yaml
+# Production deployment includes:
+- Namespace: kubeopt-com
+- Deployment: kubeopt-website (1 replica, autoscaling enabled)
+- Service: kubeopt-website (ClusterIP)
+- Ingress: kubeopt-website-ingress (HTTPS with SSL)
+- Secrets: kubeopt-secrets (Flask secret key)
+- SSL: Let's Encrypt certificates (auto-renewal)
+```
+
+### **DNS Configuration**
+```
+# GoDaddy DNS Records
+Type: A
+Name: @ (kubeopt.com)
+Value: 172.199.86.63
+
+Type: A  
+Name: www
+Value: 172.199.86.63
+```
+
+### **Build & Deploy Process**
+
+#### 1. Build Docker Image for AMD64
+```bash
+# Build for correct architecture (AKS requires AMD64)
+docker buildx build --platform linux/amd64 -t kubeopt-website:amd64 .
+
+# Tag for Azure Container Registry
+docker tag kubeopt-website:amd64 acrkubeoptioprod.azurecr.io/kubeopt-com:amd64
+```
+
+#### 2. Push to Azure Container Registry
+```bash
+# Login to ACR
+az acr login --name acrkubeoptioprod
+
+# Push image
+docker push acrkubeoptioprod.azurecr.io/kubeopt-com:amd64
+```
+
+#### 3. Deploy to AKS
+```bash
+# Apply Kubernetes manifests
+kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s/secrets.yaml
+kubectl apply -f k8s/storage.yaml  
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+kubectl apply -f k8s/ingress.yaml
+
+# Verify deployment
+kubectl get pods -n kubeopt-com
+kubectl get ingress -n kubeopt-com
+```
+
+#### 4. NGINX Ingress Controller Setup
+```bash
+# Install NGINX Ingress Controller
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/cloud/deploy.yaml
+
+# Verify external IP assignment
+kubectl get svc -n ingress-nginx
+```
+
+### **SSL Certificate Management**
+- **Provider**: Let's Encrypt (via cert-manager)
+- **Auto-renewal**: Enabled
+- **Challenge**: HTTP-01
+- **Certificates**: kubeopt.com, www.kubeopt.com
+
+### **Monitoring & Health Checks**
+```bash
+# Check deployment status
+kubectl get deployment kubeopt-website -n kubeopt-com
+
+# View pod logs
+kubectl logs -f deployment/kubeopt-website -n kubeopt-com
+
+# Health check endpoint
+curl https://kubeopt.com/health
+
+# Test website
+curl -I https://kubeopt.com
+```
+
+### **Deployment Fixes Applied**
+See [docs/DEPLOYMENT-FIXES.md](docs/DEPLOYMENT-FIXES.md) for detailed documentation of issues resolved:
+1. **Image Architecture**: Fixed ARM64 → AMD64 compatibility
+2. **Container Registry**: Set up proper ACR integration  
+3. **Kubernetes Secrets**: Created required `kubeopt-secrets`
+4. **File Permissions**: Resolved volume mount permissions
+5. **Ingress Controller**: Installed and configured NGINX ingress
+
+### **Alternative Deployment Options**
+
+#### Traditional Hosting (VPS/Dedicated)
 ```bash
 # Clone repo on server
 git clone <your-repo> /var/www/kubeopt
@@ -218,14 +336,14 @@ cp .env.example .env
 gunicorn --bind 0.0.0.0:5000 --workers 4 app.main:app
 ```
 
-### 2. Docker Production
+#### Docker Production (Non-Kubernetes)
 ```bash
 # Build and deploy
 docker build -t kubeopt-website .
 docker run -d --name kubeopt-web -p 80:5000 kubeopt-website
 ```
 
-### 3. Cloud Platforms
+#### Cloud Platforms
 - **Heroku**: Include `Procfile` with `web: gunicorn app.main:app`
 - **Railway**: Direct deploy from GitHub
 - **DigitalOcean App Platform**: Use `app.yaml` config
@@ -233,22 +351,56 @@ docker run -d --name kubeopt-web -p 80:5000 kubeopt-website
 
 ## 📈 Monitoring & Maintenance
 
-### Health Check
-Visit `/health` endpoint to verify application status.
-
-### Database Maintenance
+### Production Health Monitoring
 ```bash
-# Backup database
-cp database/kubeopt.db database/backup-$(date +%Y%m%d).db
+# Application health check
+curl https://kubeopt.com/health
+
+# Kubernetes pod status
+kubectl get pods -n kubeopt-com
+
+# Ingress status
+kubectl get ingress -n kubeopt-com
+
+# SSL certificate status
+kubectl get certificates -n kubeopt-com
+```
+
+### Database Maintenance (Production)
+```bash
+# Access database via pod
+kubectl exec -it deployment/kubeopt-website -n kubeopt-com -- sqlite3 /app/database/kubeopt.db
+
+# Backup database from running pod
+kubectl cp kubeopt-com/$(kubectl get pod -n kubeopt-com -l app=kubeopt-website -o jsonpath='{.items[0].metadata.name}'):/app/database/kubeopt.db ./backup-$(date +%Y%m%d).db
 
 # Clean old analytics data (optional)
-sqlite3 database/kubeopt.db "DELETE FROM page_view WHERE timestamp < date('now', '-90 days');"
+kubectl exec -it deployment/kubeopt-website -n kubeopt-com -- sqlite3 /app/database/kubeopt.db "DELETE FROM page_view WHERE timestamp < date('now', '-90 days');"
 ```
 
 ### Log Management
-- Application logs in `logs/` directory
-- Configure log rotation for production
-- Monitor disk usage
+```bash
+# View application logs
+kubectl logs -f deployment/kubeopt-website -n kubeopt-com
+
+# View ingress controller logs
+kubectl logs -f deployment/ingress-nginx-controller -n ingress-nginx
+
+# View past 1 hour of logs
+kubectl logs --since=1h deployment/kubeopt-website -n kubeopt-com
+```
+
+### Performance Monitoring
+```bash
+# Pod resource usage
+kubectl top pods -n kubeopt-com
+
+# Node resource usage  
+kubectl top nodes
+
+# HPA status
+kubectl get hpa -n kubeopt-com
+```
 
 ## 🔧 Development
 
@@ -292,6 +444,63 @@ For issues with this website template:
 For the kubeopt tool itself:
 - Visit the main documentation
 - Docker Hub: `kubeopt/aks-optimizer`
+
+---
+
+## 🎯 **Next Steps for DNS Setup**
+
+To complete the website deployment to your domain:
+
+### **1. Update GoDaddy DNS Records**
+Login to your [GoDaddy DNS Management](https://dcc.godaddy.com/manage/dns) and add/update:
+
+```
+Type: A
+Name: @ (kubeopt.com)  
+Value: 172.199.86.63
+TTL: 1 Hour
+
+Type: A
+Name: www
+Value: 172.199.86.63  
+TTL: 1 Hour
+```
+
+### **2. Wait for DNS Propagation**
+- **Time**: 5-30 minutes typically
+- **Check**: Use `nslookup kubeopt.com` to verify DNS resolution
+- **Test**: Visit `https://kubeopt.com` once DNS propagates
+
+### **3. SSL Certificate Auto-Generation**
+Once DNS points to the correct IP:
+- Let's Encrypt will automatically issue SSL certificates
+- The site will be accessible via HTTPS
+- HTTP traffic will redirect to HTTPS automatically
+
+### **4. Verify Deployment**
+```bash
+# Check certificate status
+kubectl get certificates -n kubeopt-com
+
+# Test website accessibility  
+curl -I https://kubeopt.com
+
+# Monitor certificate issuance
+kubectl describe certificate kubeopt-com-tls -n kubeopt-com
+```
+
+---
+
+## 📊 **Current Deployment Status**
+
+✅ **AKS Cluster**: Running  
+✅ **Application**: Deployed and healthy  
+✅ **Ingress Controller**: Configured with external IP  
+✅ **SSL Setup**: Let's Encrypt configured  
+✅ **Domain**: Ready for DNS configuration  
+🔄 **DNS**: Needs GoDaddy update to `172.199.86.63`  
+
+**Website**: Fully functional and ready for public access once DNS is updated!
 
 ---
 

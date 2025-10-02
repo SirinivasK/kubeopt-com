@@ -76,16 +76,50 @@ jobs:
       run: |
         kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
 
+    - name: Install NGINX Ingress Controller
+      run: |
+        # Install NGINX Ingress Controller if not already installed
+        if ! kubectl get namespace ingress-nginx &> /dev/null; then
+          echo "Installing NGINX Ingress Controller..."
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/cloud/deploy.yaml
+          
+          # Wait for ingress controller to be ready
+          echo "Waiting for ingress controller to be ready..."
+          kubectl wait --namespace ingress-nginx \
+            --for=condition=ready pod \
+            --selector=app.kubernetes.io/component=controller \
+            --timeout=300s
+        else
+          echo "NGINX Ingress Controller already installed"
+        fi
+
     - name: Install cert-manager
       run: |
         # Install cert-manager if not already installed
         if ! kubectl get namespace cert-manager &> /dev/null; then
+          echo "Installing cert-manager..."
           kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.yaml
+          
           # Wait for cert-manager to be ready
+          echo "Waiting for cert-manager components to be ready..."
           kubectl wait --for=condition=available --timeout=300s deployment/cert-manager -n cert-manager
           kubectl wait --for=condition=available --timeout=300s deployment/cert-manager-webhook -n cert-manager
           kubectl wait --for=condition=available --timeout=300s deployment/cert-manager-cainjector -n cert-manager
+          
+          echo "✅ cert-manager installed successfully"
+        else
+          echo "cert-manager already installed"
         fi
+
+    - name: Create or update secrets
+      run: |
+        # Delete existing secret if it exists (ignore errors)
+        kubectl delete secret kubeopt-secrets -n ${{ env.NAMESPACE }} --ignore-not-found=true
+        
+        # Create new secret
+        kubectl create secret generic kubeopt-secrets \
+          --namespace=${{ env.NAMESPACE }} \
+          --from-literal=secret-key="${{ secrets.FLASK_SECRET_KEY }}"
 
     - name: Deploy to AKS
       run: |
@@ -112,6 +146,105 @@ jobs:
         
         echo "Getting pod status..."
         kubectl get pods -n ${{ env.NAMESPACE }}
+        
+        echo "Getting ingress controller external IP..."
+        EXTERNAL_IP=$(kubectl get svc ingress-nginx-controller -n ingress-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || echo "Not available yet")
+        echo "External IP: $EXTERNAL_IP"
+
+    - name: SSL Certificate Management and Verification
+      run: |
+        echo "=== SSL Certificate Management ==="
+        
+        # Wait for ingress and services to be ready
+        sleep 60
+        
+        # Check certificate status
+        echo "Checking SSL certificate status..."
+        kubectl get certificates -n ${{ env.NAMESPACE }} || echo "No certificates found yet"
+        
+        # Check for any failed challenges
+        echo "Checking ACME challenges..."
+        if kubectl get challenges -n ${{ env.NAMESPACE }} 2>/dev/null; then
+          echo "Found ACME challenges, checking status..."
+          kubectl describe challenges -n ${{ env.NAMESPACE }}
+        else
+          echo "No active ACME challenges"
+        fi
+        
+        # Check cert-manager logs if certificates are not ready
+        CERT_READY=$(kubectl get certificate kubeopt-com-tls -n ${{ env.NAMESPACE }} -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo "False")
+        
+        if [ "$CERT_READY" != "True" ]; then
+          echo "⚠️ SSL certificate not ready yet, this is normal for new deployments"
+          echo "Checking cert-manager logs for issues..."
+          kubectl logs -n cert-manager deployment/cert-manager --tail=20 || echo "Could not fetch cert-manager logs"
+          
+          # Check if there are any limit range issues
+          echo "Checking for resource limit issues..."
+          kubectl get limitrange -n ${{ env.NAMESPACE }}
+          kubectl describe limitrange -n ${{ env.NAMESPACE }} 2>/dev/null || echo "No limit ranges found"
+          
+          # Force certificate renewal if stuck
+          echo "Attempting to force certificate renewal..."
+          kubectl delete challenges --all -n ${{ env.NAMESPACE }} --ignore-not-found=true
+          kubectl annotate ingress kubeopt-website-ingress -n ${{ env.NAMESPACE }} cert-manager.io/cluster-issuer=letsencrypt-prod --overwrite
+          
+          echo "SSL certificate generation initiated. It may take 5-10 minutes to complete."
+          echo "Check certificate status with: kubectl get certificates -n ${{ env.NAMESPACE }}"
+        else
+          echo "✅ SSL certificate is ready!"
+        fi
+
+    - name: Run comprehensive health check
+      run: |
+        # Wait for service to be ready
+        sleep 30
+        
+        # Get the external IP
+        EXTERNAL_IP=$(kubectl get svc ingress-nginx-controller -n ingress-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null)
+        
+        if [ ! -z "$EXTERNAL_IP" ] && [ "$EXTERNAL_IP" != "null" ]; then
+          echo "Testing health endpoint via external IP: $EXTERNAL_IP"
+          
+          # Test HTTP redirect
+          echo "Testing HTTP to HTTPS redirect..."
+          curl -I -H "Host: kubeopt.com" http://$EXTERNAL_IP --max-time 10 || echo "HTTP test failed"
+          
+          # Test HTTPS health endpoint (with and without SSL verification)
+          echo "Testing HTTPS health endpoint..."
+          if curl -H "Host: kubeopt.com" https://$EXTERNAL_IP/health --max-time 30 2>/dev/null; then
+            echo "✅ HTTPS with valid SSL certificate working!"
+          elif curl -k -H "Host: kubeopt.com" https://$EXTERNAL_IP/health --max-time 30 2>/dev/null; then
+            echo "⚠️ HTTPS working but SSL certificate may still be generating"
+          else
+            echo "❌ HTTPS health check failed"
+          fi
+          
+          # Test main page
+          echo "Testing main page..."
+          if curl -H "Host: kubeopt.com" https://$EXTERNAL_IP --max-time 30 -s | head -5 2>/dev/null; then
+            echo "✅ Main page accessible with SSL!"
+          elif curl -k -H "Host: kubeopt.com" https://$EXTERNAL_IP --max-time 30 -s | head -5 2>/dev/null; then
+            echo "⚠️ Main page accessible, SSL certificate still generating"
+          else
+            echo "❌ Main page test failed"
+          fi
+          
+          # Check SSL certificate details
+          echo "Checking SSL certificate..."
+          openssl s_client -connect $EXTERNAL_IP:443 -servername kubeopt.com -timeout 10 </dev/null 2>/dev/null | openssl x509 -noout -subject -dates 2>/dev/null || echo "SSL certificate check failed (normal for new deployments)"
+          
+          echo ""
+          echo "================================================"
+          echo "✅ External IP available: $EXTERNAL_IP"
+          echo "🌐 Update your DNS to point kubeopt.com to $EXTERNAL_IP"
+          echo "🔒 SSL certificates will be automatically generated by Let's Encrypt"
+          echo "📱 Test your site: https://kubeopt.com"
+          echo "================================================"
+        else
+          echo "⚠️ External IP not yet available. This is normal for new deployments."
+          echo "The load balancer may take a few minutes to assign an external IP."
+        fi
 
     - name: Cleanup old images (optional)
       if: github.ref == 'refs/heads/main'

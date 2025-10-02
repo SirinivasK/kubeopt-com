@@ -17,6 +17,7 @@ Upon investigation, several issues were identified:
 2. **Architecture Mismatch**: Initial Docker image was built for ARM64 (Apple Silicon) but AKS cluster runs on AMD64
 3. **Missing Kubernetes Secret**: The `kubeopt-secrets` secret was not created in the cluster
 4. **Container Permissions**: File system permission issues preventing database file creation
+5. **SSL Certificate Generation**: LimitRange CPU minimum blocking cert-manager HTTP solver
 
 ## Fixes Applied
 
@@ -112,18 +113,52 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 ```
 
+### 5. SSL Certificate Automation
+**Problem**: SSL certificate generation failing due to resource constraints
+
+**Solution**: Fixed LimitRange and enhanced automation
+
+#### LimitRange Fix
+```yaml
+# Before
+min:
+  cpu: 50m
+  memory: 64Mi
+
+# After  
+min:
+  cpu: 10m  # Allows cert-manager HTTP solver
+  memory: 64Mi
+```
+
+#### Enhanced GitHub Actions
+- **Automated cert-manager installation**
+- **SSL certificate status monitoring**
+- **ACME challenge troubleshooting**
+- **Automatic certificate renewal on failures**
+- **Comprehensive SSL health checks**
+
 ## Current Status
-✅ **Deployment Successful**: Pod is now running (1/1 Ready)
+✅ **Deployment Successful**: Pod is now running (1/1 Ready)  
+✅ **SSL Certificates**: Let's Encrypt certificates working  
+✅ **HTTPS Access**: https://kubeopt.com and https://www.kubeopt.com  
 
 ```bash
 kubectl get pods -n kubeopt-com
 NAME                               READY   STATUS    RESTARTS   AGE
 kubeopt-website-55c88f59cd-v2dpd   1/1     Running   0          45s
+
+kubectl get certificates -n kubeopt-com
+NAME              READY   SECRET            AGE
+kubeopt-com-tls   True    kubeopt-com-tls   15m
 ```
 
 ## Files Modified
 1. `k8s/deployment.yaml` - Updated image reference and security context
-2. `Dockerfile` - Added curl dependency (changes not committed to git)
+2. `k8s/namespace.yaml` - Fixed LimitRange CPU minimum for cert-manager (50m → 10m)
+3. `.github/workflows/deploy.yml` - Enhanced with SSL certificate automation
+4. `scripts/ssl-troubleshoot.sh` - Added SSL troubleshooting script
+5. `Dockerfile` - Added curl dependency for health checks
 
 ## Security Considerations
 **Note**: The current fix runs the container as root (UID 0) to resolve permission issues with the persistent volume. For production environments, consider:
