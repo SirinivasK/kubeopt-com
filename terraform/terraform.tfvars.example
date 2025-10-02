@@ -1,0 +1,71 @@
+# Example Terraform variables for kubeopt.com deployment
+# Copy this file to terraform.tfvars and customize the values
+
+# REQUIRED: Your Azure subscription ID (prevents cross-org deployment)
+subscription_id = "aa6078c8-02d7-459d-a5cb-99da0f7752f2"
+
+# Basic Configuration
+resource_group_name = "rg-kubeopt-com-prod"
+location           = "West Europe"
+cluster_name       = "aks-kubeopt-com-prod"
+acr_name          = "acrkubeoptioprod"
+
+# Domain Configuration
+domain_name = "kubeopt.com"
+dns_label   = "kubeopt-com-prod"
+
+# Contact Information
+contact_email = "admin@kubeopt.com"
+
+# Cluster Configuration (Startup-optimized)
+# kubernetes_version = "auto"  # Uses AKS default for standard tier
+node_vm_size      = "Standard_B2s"     # Cheapest burstable VM (2 vCPU, 4GB RAM)
+node_count        = 1                  # Start with 1 node
+min_node_count    = 1                  # Minimum 1 node
+max_node_count    = 2                  # Maximum 2 nodes for cost control
+
+# Website Configuration (Resource-optimized)
+website_replicas       = 1           # Single replica for cost savings
+website_image_tag     = "latest"
+website_cpu_request   = "50m"        # Lower CPU request
+website_memory_request = "64Mi"      # Lower memory request
+website_cpu_limit     = "200m"       # Lower CPU limit
+website_memory_limit  = "256Mi"      # Lower memory limit
+
+# Security Configuration
+# Add your Azure AD group object IDs for AKS admin access
+admin_group_object_ids = [
+  # "00000000-0000-0000-0000-000000000000"  # Replace with your Azure AD group ID
+]
+
+# SSL Configuration
+ssl_certificate_issuer = "letsencrypt-prod"  # Use "letsencrypt-staging" for testing
+
+# Monitoring Configuration
+enable_monitoring  = true
+log_retention_days = 30
+
+# Network Configuration
+network_plugin = "azure"
+network_policy = "azure"
+
+# Feature Flags (Cost-optimized)
+enable_auto_scaling              = true
+enable_spot_instances           = true   # Enable for 60-80% cost savings
+enable_azure_policy             = false  # Disabled to save costs
+enable_http_application_routing = false  # Disabled to save costs
+
+# Resource Limits (Cost-optimized)
+disk_size_gb = 32    # Minimum for ephemeral disks
+max_pods     = 20    # Reduced for smaller nodes
+
+# Tags
+common_tags = {
+  Environment = "production"
+  Project     = "kubeopt-com"
+  Owner       = "nivaya-technologies"
+  ManagedBy   = "terraform"
+  Purpose     = "website-hosting"
+  CostCenter  = "marketing"
+  Contact     = "admin@kubeopt.com"
+}

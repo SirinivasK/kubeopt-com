@@ -1,0 +1,28 @@
+# Flask and extensions
+Flask
+Flask-SQLAlchemy
+Flask-Mail
+Flask-WTF
+WTForms
+
+# Database
+SQLAlchemy
+
+# Security
+Werkzeug
+itsdangerous
+
+# Utilities
+python-dotenv
+email-validator
+gunicorn
+
+# Development tools (optional)
+pytest
+pytest-flask
+black
+flake8
+
+# Production tools
+psycopg2-binary
+redis

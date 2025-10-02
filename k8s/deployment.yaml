@@ -1,0 +1,164 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubeopt-website
+  namespace: kubeopt-com
+  labels:
+    app: kubeopt-website
+    app.kubernetes.io/name: kubeopt-website
+    app.kubernetes.io/part-of: kubeopt-platform
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/component: website
+    app.kubernetes.io/managed-by: kubectl
+spec:
+  replicas: 1  # Start with 1 replica for cost savings
+  selector:
+    matchLabels:
+      app: kubeopt-website
+  template:
+    metadata:
+      labels:
+        app: kubeopt-website
+        app.kubernetes.io/name: kubeopt-website
+        app.kubernetes.io/component: website
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "5000"
+        prometheus.io/path: "/health"
+    spec:
+      containers:
+      - name: kubeopt-website
+        image: {{IMAGE_TAG}}  # This will be replaced by GitHub Actions
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+          name: http
+          protocol: TCP
+        env:
+        - name: FLASK_ENV
+          value: "production"
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: kubeopt-secrets
+              key: secret-key
+        - name: DATABASE_URL
+          value: "sqlite:///app/database/kubeopt.db"
+        - name: MAIL_SERVER
+          value: "smtp.gmail.com"
+        - name: MAIL_PORT
+          value: "587"
+        - name: MAIL_USE_TLS
+          value: "true"
+        - name: ADMIN_EMAIL
+          value: "admin@kubeopt.com"
+        resources:
+          requests:
+            cpu: 50m      # Reduced for cost optimization
+            memory: 64Mi  # Reduced for cost optimization
+          limits:
+            cpu: 200m     # Reduced for cost optimization
+            memory: 256Mi # Reduced for cost optimization
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: database-volume
+          mountPath: /app/database
+        - name: logs-volume
+          mountPath: /app/logs
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+      volumes:
+      - name: database-volume
+        persistentVolumeClaim:
+          claimName: kubeopt-database-pvc
+      - name: logs-volume
+        emptyDir: {}
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+      tolerations:
+      - key: kubernetes.azure.com/scalesetpriority
+        operator: Equal
+        value: spot
+        effect: NoSchedule
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - kubeopt-website
+              topologyKey: kubernetes.io/hostname
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: kubeopt-website-hpa
+  namespace: kubeopt-com
+  labels:
+    app: kubeopt-website
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: kubeopt-website
+  minReplicas: 1  # Start with 1 for cost savings
+  maxReplicas: 3  # Limit max replicas for cost control
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 60
+      - type: Pods
+        value: 2
+        periodSeconds: 60

@@ -1,0 +1,790 @@
+/* Contact and Download Sections - kubeopt Theme */
+
+/* ==========================================
+   SECTION HEADERS (Consistent Styling)
+   ========================================== */
+
+.section-header {
+    text-align: center;
+    margin-bottom: var(--spacing-3xl);
+    position: relative;
+    z-index: 2;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    font-family: var(--font-family);
+    background: linear-gradient(135deg, var(--text-primary), var(--green-600));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--spacing-md);
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: var(--gradient-green);
+    border-radius: 2px;
+}
+
+.section-description {
+    font-size: 1.1rem;
+    font-family: var(--font-family);
+    color: var(--text-secondary);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+    font-weight: 400;
+}
+
+/* ==========================================
+   CONTACT SECTION STYLES
+   ========================================== */
+
+.contact {
+    background: var(--gradient-hero);
+    position: relative;
+    overflow: hidden;
+}
+
+.contact::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%2322c55e" stroke-width="0.3" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.4;
+}
+
+.contact-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-3xl);
+    position: relative;
+    z-index: 2;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+}
+
+.contact-item {
+    background: var(--bg-card);
+    border: 2px solid var(--green-200);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-green);
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+    transform-origin: left;
+}
+
+.contact-item:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--green-400);
+}
+
+.contact-item:hover::before {
+    transform: scaleX(1);
+}
+
+.contact-icon {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-md);
+    filter: drop-shadow(0 4px 8px rgba(34, 197, 94, 0.3));
+}
+
+.contact-item h3 {
+    color: var(--green-600);
+    font-size: 1.2rem;
+    font-weight: 600;
+    font-family: var(--font-family);
+    margin-bottom: var(--spacing-sm);
+}
+
+.contact-item p {
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+    font-size: 0.95rem;
+    font-family: var(--font-family);
+    line-height: 1.5;
+}
+
+/* Contact Form Styling */
+.contact-form {
+    background: var(--bg-card);
+    border: 2px solid var(--green-200);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-2xl);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: var(--gradient-green);
+}
+
+.form-group {
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    font-family: var(--font-family);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+    font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: var(--spacing-md);
+    border: 2px solid var(--green-200);
+    border-radius: var(--border-radius);
+    font-size: 0.95rem;
+    font-family: var(--font-family);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: var(--transition);
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--green-500);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+    background: var(--green-50);
+}
+
+.form-group textarea {
+    min-height: 120px;
+    line-height: 1.6;
+}
+
+/* Contact Form Submit Button */
+.contact-form .btn-primary {
+    width: 100%;
+    font-size: 1rem;
+    font-family: var(--font-family);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background: var(--gradient-green);
+    border: none;
+    color: var(--text-white);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-form .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s;
+}
+
+.contact-form .btn-primary:hover::before {
+    left: 100%;
+}
+
+/* ==========================================
+   DOWNLOAD SECTION STYLES
+   ========================================== */
+
+.download {
+    background: var(--bg-secondary);
+    position: relative;
+}
+
+.download::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="1" fill="%2322c55e" opacity="0.1"><animate attributeName="r" values="0;3;0" dur="4s" repeatCount="indefinite"/></circle><circle cx="60" cy="40" r="1" fill="%2322c55e" opacity="0.1"><animate attributeName="r" values="0;2;0" dur="3s" repeatCount="indefinite" begin="1s"/></circle><circle cx="80" cy="70" r="1" fill="%2322c55e" opacity="0.1"><animate attributeName="r" values="0;2.5;0" dur="3.5s" repeatCount="indefinite" begin="2s"/></circle></svg>');
+    opacity: 0.6;
+}
+
+.download-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--spacing-xl);
+    position: relative;
+    z-index: 2;
+    margin-bottom: var(--spacing-3xl);
+}
+
+.download-card {
+    background: var(--bg-card);
+    border: 2px solid var(--green-200);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+}
+
+.download-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: var(--gradient-green);
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+    transform-origin: center;
+}
+
+.download-card.featured {
+    border-color: var(--green-500);
+    transform: scale(1.02);
+    box-shadow: var(--shadow-xl);
+    background: linear-gradient(145deg, var(--bg-card) 0%, var(--green-50) 100%);
+}
+
+.download-card.featured::after {
+    content: 'RECOMMENDED';
+    position: absolute;
+    top: -10px;
+    right: -30px;
+    background: var(--gradient-green);
+    color: var(--text-white);
+    padding: var(--spacing-xs) var(--spacing-2xl);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transform: rotate(45deg);
+    box-shadow: var(--shadow-md);
+}
+
+.download-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--green-400);
+}
+
+.download-card:hover::before {
+    transform: scaleX(1);
+}
+
+.download-card h3 {
+    color: var(--green-600);
+    font-size: 1.2rem;
+    font-weight: 600;
+    font-family: var(--font-family);
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.download-card p {
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-lg);
+    font-size: 0.95rem;
+    font-family: var(--font-family);
+    line-height: 1.6;
+}
+
+.download-steps {
+    margin-bottom: var(--spacing-lg);
+}
+
+.step {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-family: var(--font-family);
+    margin-bottom: var(--spacing-sm);
+    padding-left: var(--spacing-lg);
+    position: relative;
+}
+
+.step::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--green-500);
+    font-weight: 600;
+}
+
+/* Code Snippet Styling */
+.code-snippet {
+    position: relative;
+    background: var(--bg-dark);
+    border: 2px solid var(--green-300);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+    overflow: hidden;
+}
+
+.code-snippet::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-green);
+}
+
+.code-snippet code {
+    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    font-size: 0.85rem;
+    color: var(--green-200);
+    display: block;
+    line-height: 1.5;
+    word-break: break-all;
+    white-space: pre-wrap;
+}
+
+.copy-btn {
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    background: var(--green-600);
+    color: var(--text-white);
+    border: none;
+    border-radius: var(--border-radius);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.8rem;
+    font-weight: 500;
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: var(--transition);
+    z-index: 10;
+}
+
+.copy-btn:hover {
+    background: var(--green-700);
+    transform: scale(1.05);
+}
+
+.copy-btn.copied,
+.copy-button.copied {
+    background: var(--success);
+    animation: pulse 0.5s ease;
+}
+
+/* Auto-generated copy buttons styling */
+.copy-button {
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    background: var(--green-600);
+    color: var(--text-white);
+    border: none;
+    border-radius: var(--border-radius);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.8rem;
+    font-weight: 500;
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: var(--transition);
+    z-index: 10;
+}
+
+.copy-button:hover {
+    background: var(--green-700);
+    transform: scale(1.05);
+}
+
+/* Download CTA */
+.download-cta {
+    text-align: center;
+    background: var(--bg-card);
+    border: 2px solid var(--green-200);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-2xl);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.download-cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-green);
+}
+
+.download-cta h3 {
+    color: var(--green-600);
+    font-size: 1.5rem;
+    font-weight: 600;
+    font-family: var(--font-family);
+    margin-bottom: var(--spacing-md);
+}
+
+.download-cta p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-family: var(--font-family);
+    margin-bottom: var(--spacing-xl);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: var(--spacing-lg);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* ==========================================
+   DOCS SECTION STYLES
+   ========================================== */
+
+.docs {
+    background: var(--bg-primary);
+    position: relative;
+}
+
+.docs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-3xl);
+}
+
+.doc-card {
+    background: var(--bg-card);
+    border: 2px solid var(--green-200);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+}
+
+.doc-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-green);
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+    transform-origin: center;
+}
+
+.doc-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--green-400);
+}
+
+.doc-card:hover::before {
+    transform: scaleX(1);
+}
+
+.doc-icon {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-md);
+    filter: drop-shadow(0 4px 8px rgba(34, 197, 94, 0.3));
+}
+
+.doc-title {
+    color: var(--green-600);
+    font-size: 1.2rem;
+    font-weight: 600;
+    font-family: var(--font-family);
+    margin-bottom: var(--spacing-md);
+}
+
+.doc-description {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-family: var(--font-family);
+    margin-bottom: var(--spacing-lg);
+    line-height: 1.6;
+}
+
+.doc-link {
+    color: var(--green-600);
+    font-weight: 600;
+    font-family: var(--font-family);
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: var(--transition);
+    position: relative;
+}
+
+.doc-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--green-600);
+    transition: width 0.3s ease;
+}
+
+.doc-link:hover::after {
+    width: 100%;
+}
+
+/* Docker Commands Section */
+.docker-commands {
+    background: var(--bg-card);
+    border: 2px solid var(--green-200);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.docker-commands::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-green);
+}
+
+.commands-title {
+    color: var(--green-600);
+    font-size: 1.3rem;
+    font-weight: 600;
+    font-family: var(--font-family);
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+}
+
+/* Tab Navigation */
+.command-tabs {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+    border-bottom: 2px solid var(--green-200);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.tab {
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--bg-secondary);
+    border: 2px solid var(--green-200);
+    border-bottom: none;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 500;
+    font-family: var(--font-family);
+    font-size: 0.95rem;
+    position: relative;
+}
+
+.tab.active {
+    background: var(--bg-card);
+    color: var(--green-600);
+    border-color: var(--green-500);
+    transform: translateY(2px);
+    font-weight: 600;
+}
+
+.tab:hover {
+    background: var(--green-50);
+    color: var(--green-600);
+}
+
+/* Tab Content */
+.command-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.command-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Code Block in Commands */
+.docker-commands .code-block {
+    background: var(--bg-dark);
+    border: 2px solid var(--green-300);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-lg);
+    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--green-200);
+    overflow-x: auto;
+    white-space: pre;
+    position: relative;
+}
+
+.docker-commands .code-block::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-green);
+}
+
+/* Animation Classes for Scroll Effects */
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease;
+}
+
+.animate-on-scroll.fade-in-up {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .section-description {
+        font-size: 1rem;
+    }
+    .contact-content {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-xl);
+    }
+    
+    .download-options {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .download-card.featured {
+        transform: none;
+    }
+    
+    .docs-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .command-tabs {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .tab {
+        width: 100%;
+        text-align: center;
+        max-width: 200px;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .code-snippet code {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-item,
+    .download-card,
+    .doc-card {
+        padding: var(--spacing-lg);
+    }
+    
+    .contact-form,
+    .docker-commands,
+    .download-cta {
+        padding: var(--spacing-lg);
+    }
+    
+    .download-card h3 {
+        font-size: 1.1rem;
+    }
+    
+    .doc-title {
+        font-size: 1.1rem;
+    }
+    
+    .download-cta h3 {
+        font-size: 1.3rem;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .copy-btn {
+        position: static;
+        margin-top: var(--spacing-sm);
+        width: 100%;
+    }
+}

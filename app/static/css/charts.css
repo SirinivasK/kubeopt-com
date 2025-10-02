@@ -1,0 +1,363 @@
+/* Modern Chart Styles - kubeopt Green/White Theme */
+
+.demo {
+    background: var(--bg-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.demo::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, var(--green-100) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, var(--green-50) 0%, transparent 50%);
+    opacity: 0.6;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: var(--spacing-xl);
+    position: relative;
+    z-index: 2;
+}
+
+.chart-container {
+    background: var(--bg-card);
+    border: 1px solid var(--green-200);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-lg);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: var(--backdrop-blur);
+    height: 400px;
+    max-height: 400px;
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.chart-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-green);
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+    transform-origin: left;
+}
+
+.chart-container::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 8px;
+    height: 8px;
+    background: var(--green-500);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.chart-container:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--green-400);
+}
+
+.chart-container:hover::before {
+    transform: scaleX(1);
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--green-100);
+}
+
+.chart-header h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.metric-badge {
+    background: var(--gradient-green);
+    color: var(--text-white);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: var(--shadow-sm);
+    animation: float 3s ease-in-out infinite;
+}
+
+.metric-badge.counter {
+    background: var(--gradient-green);
+    font-size: 1.2rem;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    min-width: 80px;
+    text-align: center;
+}
+
+/* Chart Canvas Styling */
+canvas {
+    border-radius: var(--border-radius);
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 4px 8px rgba(34, 197, 94, 0.1));
+    max-width: 100%;
+    max-height: 300px;
+    width: 100% !important;
+    height: 300px !important;
+}
+
+.chart-container:hover canvas {
+    filter: drop-shadow(0 8px 16px rgba(34, 197, 94, 0.2));
+}
+
+/* Demo Terminal Section */
+.demo-terminal {
+    background: var(--bg-card);
+    border: 1px solid var(--green-200);
+    border-radius: var(--border-radius-lg);
+    margin-top: var(--spacing-3xl);
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    position: relative;
+}
+
+.demo-terminal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(135deg, var(--green-600), var(--green-700));
+    display: flex;
+    align-items: center;
+    padding: 0 var(--spacing-lg);
+}
+
+.demo-terminal::after {
+    content: '● ● ●';
+    position: absolute;
+    top: 15px;
+    left: var(--spacing-lg);
+    color: var(--text-white);
+    font-size: 0.8rem;
+    letter-spacing: 4px;
+}
+
+.demo-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+    padding-top: var(--spacing-lg);
+}
+
+.demo-output {
+    background: var(--bg-dark);
+    color: var(--green-200);
+    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    padding: var(--spacing-xl);
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    position: relative;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.demo-output::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--gradient-green);
+}
+
+/* Terminal text styling */
+.demo-output .info {
+    color: var(--blue-400);
+    display: block;
+}
+
+.demo-output .success {
+    color: var(--green-400);
+    display: block;
+    font-weight: 500;
+}
+
+.demo-output .warning {
+    color: var(--warning);
+    display: block;
+    font-weight: 600;
+}
+
+.demo-output .metric {
+    color: var(--green-300);
+    display: block;
+    font-weight: 500;
+}
+
+.demo-output .error {
+    color: var(--error);
+    display: block;
+}
+
+/* Code syntax highlighting */
+.demo-code .keyword {
+    color: var(--blue-400);
+    font-weight: 600;
+}
+
+.demo-code .string {
+    color: var(--green-300);
+}
+
+.demo-code .comment {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Animated counter */
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.counter {
+    animation: countUp 1s ease-out;
+}
+
+/* Responsive chart grid */
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .chart-container {
+        padding: var(--spacing-lg);
+    }
+    
+    .chart-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+    }
+    
+    .metric-badge {
+        align-self: flex-end;
+    }
+    
+    .demo-output {
+        font-size: 0.8rem;
+        padding: var(--spacing-lg);
+    }
+}
+
+@media (max-width: 480px) {
+    .chart-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .metric-badge {
+        font-size: 0.7rem;
+        padding: 2px var(--spacing-sm);
+    }
+    
+    .demo-title {
+        font-size: 1.3rem;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Chart hover effects */
+.chart-container:hover .metric-badge {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-md);
+}
+
+/* Loading state for charts */
+.chart-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    background: var(--green-50);
+    border-radius: var(--border-radius);
+}
+
+.chart-loading::before {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--green-200);
+    border-top: 4px solid var(--green-500);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Custom scrollbar for terminal */
+.demo-output::-webkit-scrollbar {
+    width: 8px;
+}
+
+.demo-output::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+
+.demo-output::-webkit-scrollbar-thumb {
+    background: var(--green-600);
+    border-radius: 4px;
+}
+
+.demo-output::-webkit-scrollbar-thumb:hover {
+    background: var(--green-500);
+}

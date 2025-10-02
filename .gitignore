@@ -1,0 +1,118 @@
+# Python
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.coverage
+.pytest_cache/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+kubeopt.db
+kubevista.db
+database/
+
+# Terraform sensitive files
+*.tfstate
+*.tfstate.*
+*.tfvars
+!terraform.tfvars.example
+terraform.tfplan
+.terraform/
+.terraform.lock.hcl
+kubeopt-tfenv.sh
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.staging
+*.env
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# nyc test coverage
+.nyc_output
+
+# Dependency directories
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Instance folder
+instance/
+
+# Uploads folder
+uploads/
+
+# Temporary files
+tmp/
+temp/
+
+# Azure specific
+.azure/
+
+# Docker
+.dockerignore
+
+# Sensitive files that should never be committed
+secrets.yaml
+!*.template
+*secret*
+!*secret*.template
+!*secret*.sh
+!*secret*.md
+*password*
+*key*
+*.pem
+*.p12
+*.pfx

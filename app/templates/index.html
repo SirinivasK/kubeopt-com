@@ -1,0 +1,739 @@
+{% extends "base.html" %}
+
+{% block title %}KUBEOPT - AKS Cost Optimization{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero" id="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <img src="/static/images/kubeopt_eyecon.png" alt="kubeopt" class="hero-logo"> kubeopt
+            </h1>
+            <p class="hero-subtitle">
+                Your third eye for Kubernetes
+            </p>
+            <p class="hero-tagline">
+                <strong>Intelligent. Insightful. Illuminating.</strong>
+            </p>
+            <p class="hero-description">
+                Deploy our advanced cost optimizer in your environment. 
+                Portfolio management, real-time analysis, predictive scaling, and comprehensive 
+                optimization across AKS clusters. Your cluster data never leaves your infrastructure.
+            </p>
+            <div class="hero-actions">
+                <a href="#download" class="btn btn-primary btn-lg" data-track="hero_cta_primary">
+                    Get Started Free
+                </a>
+                <a href="#demo" class="btn btn-secondary btn-lg" data-track="hero_cta_secondary">
+                    View Demo
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Start Section -->
+        <div class="quick-start">
+            <h3 class="quick-start-title">
+                🚀 Deploy in Under 5 Minutes
+            </h3>
+            <div class="code-block demo-code">
+<span class="comment"># Pull and run kubeopt optimizer</span>
+<span class="keyword">docker</span> run -d \
+  --name kubeopt-optimizer \
+  -v ~/.kube:/kube:ro \
+  -p 8080:8080 \
+  kubeopt/aks-optimizer:<span class="string">latest</span>
+
+<span class="comment"># Access optimization dashboard</span>
+<span class="keyword">open</span> <span class="string">http://localhost:8080</span>
+            </div>
+            <p class="quick-start-features">
+                ✅ Secure by design • ✅ No data transmission • ✅ Enterprise ready
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="section features" id="features">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Enterprise-Grade Features</h2>
+            <p class="section-description">
+                Built for enterprise security and DevOps efficiency
+            </p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <path d="M9 9h6v6H9z"/>
+                        <path d="M9 1v6M15 1v6M9 17v6M15 17v6M1 9h6M1 15h6M17 9h6M17 15h6"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Portfolio Management</h3>
+                <p class="feature-description">
+                    Unified dashboard for multi-cluster AKS environments. Track current monthly costs, 
+                    predicted savings, HPA efficiency, and optimization scores across your entire portfolio.
+                </p>
+            </div>
+            
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="m15 9-6 6"/>
+                        <path d="m9 9 6 6"/>
+                        <circle cx="12" cy="12" r="2"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">HPA Optimization Impact</h3>
+                <p class="feature-description">
+                    Advanced Horizontal Pod Autoscaler analysis with predictive scaling. Monitor pod 
+                    counts across different time periods and optimize autoscaling configurations.
+                </p>
+            </div>
+            
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Cost by Namespace Analysis</h3>
+                <p class="feature-description">
+                    Detailed cost breakdown by namespace with percentage distribution. Identify 
+                    top spending areas and optimize resource allocation across your applications.
+                </p>
+            </div>
+            
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+                        <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+                        <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+                        <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Top Workloads Insights</h3>
+                <p class="feature-description">
+                    Comprehensive workload analysis showing monthly costs, resource utilization, 
+                    and optimization opportunities for your highest-impact applications.
+                </p>
+            </div>
+            
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18"/>
+                        <path d="m19 9-5 5-4-4-3 3"/>
+                        <circle cx="7" cy="13" r="1"/>
+                        <circle cx="11" cy="9" r="1"/>
+                        <circle cx="16" cy="6" r="1"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Predictive Cost Trending</h3>
+                <p class="feature-description">
+                    Real-time cost trend analysis with predictive modeling. Track spending patterns 
+                    and forecast future costs with insights.
+                </p>
+            </div>
+            
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2a3 3 0 0 0-3 3c0 1.22.24 2.39.68 3.46.43 1.07 1.07 2.02 1.85 2.8A9.74 9.74 0 0 1 14 15.46c.44-1.07.68-2.24.68-3.46A3 3 0 0 0 12 2Z"/>
+                        <path d="M12 2c-1.66 0-3 1.34-3 3 0 2.5 3 7 3 7s3-4.5 3-7c0-1.66-1.34-3-3-3Z"/>
+                        <circle cx="12" cy="5" r="1"/>
+                        <path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Business Metrics & ML Intelligence</h3>
+                <p class="feature-description">
+                    Advanced ML-driven analysis including bursty workload detection, predictive scaling 
+                    recommendations, and comprehensive business intelligence metrics.
+                </p>
+            </div>
+
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect width="14" height="20" x="5" y="2" rx="2" ry="2"/>
+                        <path d="M9 22v-4h6v4"/>
+                        <path d="M8 6h.01"/>
+                        <path d="M16 6h.01"/>
+                        <path d="M12 6h.01"/>
+                        <path d="M12 10h.01"/>
+                        <path d="M12 14h.01"/>
+                        <path d="M16 10h.01"/>
+                        <path d="M16 14h.01"/>
+                        <path d="M8 10h.01"/>
+                        <path d="M8 14h.01"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">CPU Workload Analysis</h3>
+                <p class="feature-description">
+                    Critical issue detection with average CPU analysis, peak CPU monitoring, 
+                    high CPU workload identification, and CPU efficiency optimization.
+                </p>
+            </div>
+            
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                        <circle cx="12" cy="16" r="1"/>
+                        <path d="m7 11-2-2v-3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3l-2 2"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Security Posture & Compliance</h3>
+                <p class="feature-description">
+                    Built-in security dashboard, compliance framework, and enterprise metrics. 
+                    SOC2/GDPR compliant by design with zero data transmission outside your environment.
+                </p>
+            </div>
+
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/>
+                        <path d="M6 8h2"/>
+                        <path d="M6 12h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/>
+                        <path d="M6 16h2"/>
+                        <circle cx="19" cy="8" r="2"/>
+                        <circle cx="19" cy="16" r="2"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Implementation & Alerts</h3>
+                <p class="feature-description">
+                    Automated implementation plans, comprehensive alerting system, and real-time 
+                    notifications for optimization opportunities and critical issues.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dashboard Demo Section -->
+<section class="section demo" id="demo">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Interactive Dashboard Preview</h2>
+            <p class="section-description">
+                Real dashboard from a production AKS cluster - see your optimization opportunities at a glance
+            </p>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            
+            <!-- Cost Trends Chart -->
+            <div class="chart-container animate-on-scroll">
+                <div class="chart-header">
+                    <h3>💰 Monthly Cost Trends</h3>
+                    <span class="metric-badge">-38% projected savings</span>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="costTrendsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Node Resource Utilization -->
+            <div class="chart-container animate-on-scroll">
+                <div class="chart-header">
+                    <h3>📊 Node Resource Utilization</h3>
+                    <span class="metric-badge">CPU Actual % • CPU Request % • Memory Actual % • Memory Request %</span>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="nodeUtilizationChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Cost Distribution -->
+            <div class="chart-container animate-on-scroll">
+                <div class="chart-header">
+                    <h3>💰 Cost Distribution</h3>
+                    <span class="metric-badge">$1,902,439 Total</span>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="costDistributionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Savings Breakdown -->
+            <div class="chart-container animate-on-scroll">
+                <div class="chart-header">
+                    <h3>💡 Savings Breakdown</h3>
+                    <span class="metric-badge">$186.6 Potential Savings</span>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="savingsBreakdownChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Live Terminal Output -->
+        <div class="demo-terminal animate-on-scroll">
+            <h3 class="demo-title">🔍 Live Analysis Output</h3>
+            <div class="demo-output">
+<span class="info">🤖 kubeopt ML OPTIMIZATION ENGINE</span>
+<span class="success">==================================================</span>
+<span class="info">🔍 Analyzing AKS cluster: production-east-us...</span>
+<span class="success">✅ Connected to cluster (29 resource types detected)</span>
+<span class="success">✅ ML model loaded (85% accuracy, 160 samples)</span>
+<span class="success">✅ Real-time state analysis complete</span>
+
+<span class="warning">📊 COST OPTIMIZATION ANALYSIS</span>
+<span class="info">================================================</span>
+<span class="metric">💰 Current monthly cost: $8,420</span>
+<span class="metric">💡 Potential savings: $3,180 (38%)</span>
+<span class="metric">🎯 Optimization confidence: 89%</span>
+
+<span class="warning">🚀 RECOMMENDED OPTIMIZATIONS</span>
+<span class="info">================================================</span>
+<span class="success">Phase 1: Resource Right-sizing</span>
+  • Scale down web-frontend: 5 → 3 replicas (-$420/month)
+  • Reduce API memory limits: 2Gi → 1.5Gi (-$340/month)
+  
+<span class="success">Phase 2: Auto-scaling Configuration</span>
+  • Configure HPA for payment-service (CPU: 70%)
+  • Enable VPA for background-workers
+  
+<span class="success">Phase 3: Node Optimization</span>
+  • Switch to Standard_D4s_v3 instances (-$1,200/month)
+  • Enable spot instances for dev workloads (-$890/month)
+
+<span class="warning">📝 GENERATED COMMANDS</span>
+<span class="info">================================================</span>
+kubectl patch deployment web-frontend -p '{"spec":{"replicas":3}}'
+kubectl patch deployment api-service --type merge -p '{"spec":{"template":{"spec":{"containers":[{"name":"api","resources":{"limits":{"memory":"1.5Gi"}}}]}}}}'
+
+<span class="success">✅ Commands generated successfully</span>
+<span class="info">🎯 Estimated time to apply: 5 minutes</span>
+<span class="metric">💰 Monthly savings: $3,180</span>
+<span class="metric">📈 ROI: 347% annually</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Technical Specs Section -->
+<section class="section tech-specs">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Technical Specifications</h2>
+            <p class="section-description">
+                Enterprise-ready with cutting-edge ML capabilities
+            </p>
+        </div>
+        
+        <div class="tech-grid">
+            <div class="tech-item animate-on-scroll">
+                <strong>Dashboard Features:</strong>
+                Portfolio management<br>
+                Multi-cluster support<br>
+                Real-time cost tracking<br>
+                HPA efficiency analysis
+            </div>
+            
+            <div class="tech-item animate-on-scroll">
+                <strong>Analytics Engine:</strong>
+                Cost distribution analysis<br>
+                Savings breakdown reporting<br>
+                Node resource utilization<br>
+                Predictive cost trending
+            </div>
+            
+            <div class="tech-item animate-on-scroll">
+                <strong>Workload Intelligence:</strong>
+                Top workloads identification<br>
+                CPU optimization analysis<br>
+                Business metrics integration<br>
+                Bursty workload detection
+            </div>
+            
+            <div class="tech-item animate-on-scroll">
+                <strong>Security & Compliance:</strong>
+                Enterprise security posture<br>
+                Zero data transmission<br>
+                SOC2/GDPR compliant<br>
+                Air-gapped deployment ready
+            </div>
+            
+            <div class="tech-item animate-on-scroll">
+                <strong>Automation Features:</strong>
+                Implementation plan generation<br>
+                Automated alerting system<br>
+                Optimization recommendations<br>
+                Export capabilities (JSON/CSV)
+            </div>
+            
+            <div class="tech-item animate-on-scroll">
+                <strong>Enterprise Ready:</strong>
+                Auto-analysis scheduler<br>
+                License management<br>
+                Settings management<br>
+                Background processing
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section class="section pricing" id="pricing">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Simple, Transparent Pricing</h2>
+            <p class="section-description">
+                Start free, scale as you grow
+            </p>
+        </div>
+        
+        <div class="pricing-cards">
+            <div class="pricing-card animate-on-scroll">
+                <h3 class="pricing-title">Free Dashboard</h3>
+                <div class="price">$0<span class="price-period">/forever</span></div>
+                <ul class="pricing-features">
+                    <li>✅ Interactive dashboard</li>
+                    <li>✅ Cost analysis & trends</li>
+                    <li>✅ Resource utilization charts</li>
+                    <li>✅ Optimization recommendations</li>
+                    <li>✅ Up to 10 nodes</li>
+                </ul>
+                <a href="#download" class="btn btn-primary" data-track="pricing_free">
+                    Get Started Free
+                </a>
+            </div>
+            
+            <div class="pricing-card featured animate-on-scroll">
+                <div class="pricing-badge">Most Popular</div>
+                <h3 class="pricing-title">Pro Commands</h3>
+                <div class="price">$29<span class="price-period">/cluster/month</span></div>
+                <ul class="pricing-features">
+                    <li>✅ Everything in Free</li>
+                    <li>✅ Executable kubectl commands</li>
+                    <li>✅ ML-driven optimization</li>
+                    <li>✅ API access & automation</li>
+                    <li>✅ Unlimited nodes</li>
+                    <li>✅ Priority support</li>
+                </ul>
+                <a href="#contact" class="btn btn-primary" data-track="pricing_pro">
+                    Start Pro Trial
+                </a>
+            </div>
+            
+            <div class="pricing-card animate-on-scroll">
+                <h3 class="pricing-title">Enterprise</h3>
+                <div class="price">$149<span class="price-period">/month</span></div>
+                <ul class="pricing-features">
+                    <li>✅ Everything in Pro</li>
+                    <li>✅ Multi-cluster management</li>
+                    <li>✅ Dedicated support</li>
+                    <li>✅ Air-gapped deployment</li>
+                </ul>
+                <a href="#contact" class="btn btn-secondary" data-track="pricing_enterprise">
+                    Contact Sales
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="section cta">
+    <div class="container">
+        <div class="cta-content">
+            <h2 class="cta-title">Ready to Optimize Your AKS Costs?</h2>
+            <p class="cta-description">
+                Join hundreds of DevOps teams saving thousands on Kubernetes costs with AI-powered optimization.
+            </p>
+            <div class="cta-actions">
+                <a href="#download" class="btn btn-primary btn-lg" data-track="cta_primary">
+                    Start Free Trial
+                </a>
+                <a href="#contact" class="btn btn-secondary btn-lg" data-track="cta_secondary">
+                    Schedule Demo
+                </a>
+            </div>
+            <p class="cta-note">
+                No credit card required • 5-minute setup • Enterprise security
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Documentation Section -->
+<section class="section docs" id="docs">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Documentation & Resources</h2>
+            <p class="section-description">
+                Everything you need to get started with kubeopt
+            </p>
+        </div>
+        
+        <div class="docs-grid">
+            <div class="doc-card animate-on-scroll">
+                <div class="doc-icon">🚀</div>
+                <h3 class="doc-title">Quick Start Guide</h3>
+                <p class="doc-description">
+                    Get kubeopt running in your environment in under 5 minutes with our step-by-step guide.
+                </p>
+                <a href="#download" class="doc-link">Start Setup →</a>
+            </div>
+            
+            <div class="doc-card animate-on-scroll">
+                <div class="doc-icon">📖</div>
+                <h3 class="doc-title">API Reference</h3>
+                <p class="doc-description">
+                    Complete API documentation for integrating kubeopt with your existing DevOps tools.
+                </p>
+                <a href="#api" class="doc-link">View API Docs →</a>
+            </div>
+            
+            <div class="doc-card animate-on-scroll">
+                <div class="doc-icon">🔧</div>
+                <h3 class="doc-title">Configuration</h3>
+                <p class="doc-description">
+                    Advanced configuration options for enterprise deployments.
+                </p>
+                <a href="#config" class="doc-link">Configure →</a>
+            </div>
+            
+            <div class="doc-card animate-on-scroll">
+                <div class="doc-icon">💡</div>
+                <h3 class="doc-title">Best Practices</h3>
+                <p class="doc-description">
+                    Learn from real-world deployments and optimize your AKS cost reduction strategies.
+                </p>
+                <a href="#best-practices" class="doc-link">Learn More →</a>
+            </div>
+        </div>
+        
+        <!-- Docker Commands Section -->
+        <div class="docker-commands">
+            <h3 class="commands-title">Installation Commands</h3>
+            <div class="command-tabs">
+                <div class="tab active" data-tab="docker">Docker</div>
+                <div class="tab" data-tab="kubernetes">Kubernetes</div>
+                <div class="tab" data-tab="helm">Helm</div>
+            </div>
+            
+            <div class="command-content active" data-content="docker">
+                <div class="code-block">
+<span class="comment"># Pull the latest kubeopt image</span>
+<span class="keyword">docker</span> pull kubeopt/aks-optimizer:<span class="string">latest</span>
+
+<span class="comment"># Run with your kubeconfig</span>
+<span class="keyword">docker</span> run -d \
+  --name kubeopt-optimizer \
+  -v ~/.kube:/kube:ro \
+  -p 8080:8080 \
+  kubeopt/aks-optimizer:<span class="string">latest</span>
+
+<span class="comment"># Access dashboard</span>
+<span class="keyword">open</span> <span class="string">http://localhost:8080</span>
+                </div>
+            </div>
+            
+            <div class="command-content" data-content="kubernetes">
+                <div class="code-block">
+<span class="comment"># Deploy using kubectl</span>
+<span class="keyword">kubectl</span> apply -f https://raw.githubusercontent.com/kubeopt/deploy/main/k8s/kubeopt.yaml
+
+<span class="comment"># Port forward to access dashboard</span>
+<span class="keyword">kubectl</span> port-forward svc/kubeopt 8080:80
+
+<span class="comment"># Access dashboard</span>
+<span class="keyword">open</span> <span class="string">http://localhost:8080</span>
+                </div>
+            </div>
+            
+            <div class="command-content" data-content="helm">
+                <div class="code-block">
+<span class="comment"># Add kubeopt Helm repository</span>
+<span class="keyword">helm</span> repo add kubeopt https://charts.kubeopt.com
+<span class="keyword">helm</span> repo update
+
+<span class="comment"># Install kubeopt</span>
+<span class="keyword">helm</span> install kubeopt kubeopt/aks-optimizer
+
+<span class="comment"># Get service URL</span>
+<span class="keyword">kubectl</span> get svc kubeopt
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="section contact" id="contact">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Get in Touch</h2>
+            <p class="section-description">
+                Ready to optimize your AKS costs? We're here to help!
+            </p>
+        </div>
+        
+        <div class="contact-content">
+            <div class="contact-info">
+                <div class="contact-item">
+                    <div class="contact-icon">📧</div>
+                    <h3>Email Us</h3>
+                    <p>hello@kubeopt.com</p>
+                    <p>support@kubeopt.com</p>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">💬</div>
+                    <h3>Schedule Demo</h3>
+                    <p>See kubeopt in action with your own AKS clusters</p>
+                    <a href="#demo-schedule" class="btn btn-secondary">Book Demo</a>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">📞</div>
+                    <h3>Enterprise Sales</h3>
+                    <p>Custom deployments and enterprise support</p>
+                    <a href="#enterprise" class="btn btn-primary">Contact Sales</a>
+                </div>
+            </div>
+            
+            <div class="contact-form">
+                <form id="contactForm" method="POST" action="/contact">
+                    <div class="form-group">
+                        <label for="name">Name *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="company">Company</label>
+                        <input type="text" id="company" name="company">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Message *</label>
+                        <textarea id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Download Section -->
+<section class="section download" id="download">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Get Started with kubeopt</h2>
+            <p class="section-description">
+                Choose your deployment method and start optimizing in minutes
+            </p>
+        </div>
+        
+        <div class="download-options">
+            <div class="download-card featured">
+                <h3>🐳 Docker (Recommended)</h3>
+                <p>Perfect for quick evaluation and development environments</p>
+                <div class="download-steps">
+                    <div class="step">1. Pull the image</div>
+                    <div class="step">2. Mount your kubeconfig</div>
+                    <div class="step">3. Access the dashboard</div>
+                </div>
+                <div class="code-snippet">
+                    <code>docker run -d -v ~/.kube:/kube:ro -p 8080:8080 kubeopt/aks-optimizer</code>
+                    <button class="copy-btn" onclick="window.kubeopt.copyToClipboard(this)">Copy</button>
+                </div>
+            </div>
+            
+            <div class="download-card">
+                <h3>☸️ Kubernetes</h3>
+                <p>Deploy directly into your AKS cluster for production use</p>
+                <div class="download-steps">
+                    <div class="step">1. Apply the YAML manifest</div>
+                    <div class="step">2. Configure RBAC permissions</div>
+                    <div class="step">3. Access via port-forward or ingress</div>
+                </div>
+                <div class="code-snippet">
+                    <code>kubectl apply -f https://deploy.kubeopt.com/k8s/latest.yaml</code>
+                    <button class="copy-btn" onclick="window.kubeopt.copyToClipboard(this)">Copy</button>
+                </div>
+            </div>
+            
+            <div class="download-card">
+                <h3>⎈ Helm Chart</h3>
+                <p>Enterprise-ready deployment with customizable values</p>
+                <div class="download-steps">
+                    <div class="step">1. Add the Helm repository</div>
+                    <div class="step">2. Customize values.yaml</div>
+                    <div class="step">3. Install with Helm</div>
+                </div>
+                <div class="code-snippet">
+                    <code>helm install kubeopt kubeopt/aks-optimizer</code>
+                    <button class="copy-btn" onclick="window.kubeopt.copyToClipboard(this)">Copy</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="download-cta">
+            <h3>Need help getting started?</h3>
+            <p>Our team can help you deploy kubeopt in your environment</p>
+            <div class="cta-buttons">
+                <a href="#contact" class="btn btn-primary">Get Support</a>
+                <a href="#docs" class="btn btn-secondary">View Documentation</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/advanced-charts.js') }}"></script>
+<script>
+// Initialize page-specific functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Add smooth scrolling to pricing section
+    document.querySelectorAll('a[href="#pricing"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('pricing').scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+    
+    // Track pricing card interactions
+    document.querySelectorAll('.pricing-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            const plan = this.querySelector('.pricing-title').textContent;
+            if (window.kubeopt && window.kubeopt.trackEvent) {
+                window.kubeopt.trackEvent('pricing_card_hover', plan);
+            }
+        });
+    });
+    
+    // Initialize chart animations with delay
+    setTimeout(function() {
+        if (window.kubeoptCharts) {
+            window.kubeoptCharts.animateCounters();
+        }
+    }, 500);
+});
+</script>
+{% endblock %}

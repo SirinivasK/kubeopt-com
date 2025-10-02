@@ -1,0 +1,90 @@
+name: Deploy to AKS
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  REGISTRY: acrkubeoptioprod.azurecr.io
+  IMAGE_NAME: kubeopt-com
+  AKS_CLUSTER_NAME: aks-kubeopt-com-prod
+  AKS_RESOURCE_GROUP: rg-kubeopt-com-prod
+  NAMESPACE: kubeopt-com
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to Azure Container Registry
+      run: |
+        az acr login --name acrkubeoptioprod
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        platforms: linux/amd64
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Get AKS credentials
+      run: |
+        az aks get-credentials --resource-group ${{ env.AKS_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }}
+
+    - name: Create namespace if not exists
+      run: |
+        kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+
+    - name: Deploy to AKS
+      run: |
+        # Replace image tag in deployment manifest
+        sed -i "s|{{IMAGE_TAG}}|${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}|g" k8s/deployment.yaml
+        
+        # Apply Kubernetes manifests
+        kubectl apply -f k8s/ -n ${{ env.NAMESPACE }}
+        
+        # Wait for deployment to be ready
+        kubectl rollout status deployment/kubeopt-website -n ${{ env.NAMESPACE }} --timeout=300s
+
+    - name: Get service info
+      run: |
+        echo "Getting service information..."
+        kubectl get services -n ${{ env.NAMESPACE }}
+        kubectl get ingress -n ${{ env.NAMESPACE }} || echo "No ingress found"
+        
+        echo "Getting pod status..."
+        kubectl get pods -n ${{ env.NAMESPACE }}
+
+    - name: Cleanup old images (optional)
+      if: github.ref == 'refs/heads/main'
+      run: |
+        # Keep only last 5 images to save ACR storage costs
+        az acr repository show-tags --name acrkubeoptioprod --repository ${{ env.IMAGE_NAME }} --orderby time_desc --output tsv | tail -n +6 | xargs -I {} az acr repository delete --name acrkubeoptioprod --image ${{ env.IMAGE_NAME }}:{} --yes || true
