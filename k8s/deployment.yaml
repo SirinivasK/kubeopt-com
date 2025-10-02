@@ -12,6 +12,11 @@ metadata:
     app.kubernetes.io/managed-by: kubectl
 spec:
   replicas: 1  # Start with 1 replica for cost savings
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   selector:
     matchLabels:
       app: kubeopt-website
@@ -61,7 +66,7 @@ spec:
             memory: 256Mi # Reduced for cost optimization
         livenessProbe:
           httpGet:
-            path: /health
+            path: /
             port: 5000
           initialDelaySeconds: 30
           periodSeconds: 10
@@ -69,9 +74,9 @@ spec:
           failureThreshold: 3
         readinessProbe:
           httpGet:
-            path: /health
+            path: /
             port: 5000
-          initialDelaySeconds: 5
+          initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 3
           failureThreshold: 3
