@@ -167,7 +167,7 @@ jobs:
         echo "🚀 Deploying kubeopt.com to production..."
         
         # Apply base manifests
-        kubectl apply -f k8s/secrets.yaml
+        kubectl apply -f k8s/namespace.yaml
         kubectl apply -f k8s/storage.yaml
         
         # Deploy with specific image tag

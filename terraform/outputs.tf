@@ -31,6 +31,15 @@ output "acr_name" {
   value       = azurerm_container_registry.kubeopt.name
 }
 
+output "github_actions_service_principal" {
+  description = "GitHub Actions service principal information"
+  value = {
+    object_id     = data.azuread_service_principal.github_actions.object_id
+    application_id = data.azuread_service_principal.github_actions.client_id
+    display_name  = data.azuread_service_principal.github_actions.display_name
+  }
+}
+
 output "acr_login_server" {
   description = "Login server for the Azure Container Registry"
   value       = azurerm_container_registry.kubeopt.login_server

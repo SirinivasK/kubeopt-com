@@ -21,8 +21,18 @@ provider "azurerm" {
   }
 }
 
+# Configure the Azure AD Provider
+provider "azuread" {
+  tenant_id = data.azurerm_client_config.current.tenant_id
+}
+
 # Data source for client configuration
 data "azurerm_client_config" "current" {}
+
+# Data source for GitHub Actions service principal
+data "azuread_service_principal" "github_actions" {
+  display_name = "kubeopt-github-actions"
+}
 
 # Resource Group
 resource "azurerm_resource_group" "kubeopt" {
@@ -168,12 +178,23 @@ resource "azurerm_role_assignment" "aks_acr_pull" {
   skip_service_principal_aad_check = true
 }
 
-# Role assignment for GitHub Actions service principal to manage AKS cluster
+# Role assignments for GitHub Actions service principal
 resource "azurerm_role_assignment" "github_actions_aks_admin" {
-  count                = var.github_actions_service_principal_id != "" ? 1 : 0
-  principal_id         = var.github_actions_service_principal_id
+  principal_id         = data.azuread_service_principal.github_actions.object_id
   role_definition_name = "Azure Kubernetes Service RBAC Cluster Admin"
   scope                = azurerm_kubernetes_cluster.kubeopt.id
+}
+
+resource "azurerm_role_assignment" "github_actions_acr_push" {
+  principal_id         = data.azuread_service_principal.github_actions.object_id
+  role_definition_name = "AcrPush"
+  scope                = azurerm_container_registry.kubeopt.id
+}
+
+resource "azurerm_role_assignment" "github_actions_acr_pull" {
+  principal_id         = data.azuread_service_principal.github_actions.object_id
+  role_definition_name = "AcrPull"
+  scope                = azurerm_container_registry.kubeopt.id
 }
 
 # Public IP for Load Balancer (for kubeopt.com domain)

@@ -255,8 +255,3 @@ variable "mx_records" {
   default = []
 }
 
-variable "github_actions_service_principal_id" {
-  description = "Service principal ID for GitHub Actions to access AKS cluster"
-  type        = string
-  default     = ""
-}
