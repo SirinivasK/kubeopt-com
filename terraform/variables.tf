@@ -37,7 +37,7 @@ variable "kubernetes_version" {
 variable "node_count" {
   description = "Initial number of nodes in the default node pool"
   type        = number
-  default     = 2
+  default     = 1  # Start with just 1 node for maximum savings
 }
 
 variable "min_node_count" {
@@ -133,7 +133,7 @@ variable "network_policy" {
 variable "log_retention_days" {
   description = "Log retention period in days"
   type        = number
-  default     = 30
+  default     = 30  # Minimum for cost savings
   validation {
     condition     = var.log_retention_days >= 30 && var.log_retention_days <= 730
     error_message = "Log retention must be between 30 and 730 days."

@@ -1,334 +1,481 @@
-/* Features Section - Modern Green/White Theme */
+/* ==========================================
+   KUBEOPT.COM - Features Section Styles
+   Based on aks-cost-optimizer design system
+   ========================================== */
 
+/* Features Section - Main styling */
 .features {
-    background: var(--bg-secondary);
-    position: relative;
-    overflow: hidden;
-}
-
-.features::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg, transparent 48%, var(--green-50) 50%, transparent 52%);
-    opacity: 0.3;
-}
-
-.section-header {
-    text-align: center;
-    margin-bottom: var(--spacing-3xl);
-    position: relative;
-    z-index: 2;
-}
-
-.section-title {
-    font-size: 2.5rem;
-    font-weight: 600;
-    font-family: var(--font-family);
-    background: linear-gradient(135deg, var(--text-primary), var(--green-600));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: var(--spacing-md);
-    position: relative;
-}
-
-.section-title::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 4px;
-    background: var(--gradient-green);
-    border-radius: 2px;
-}
-
-.section-description {
-    font-size: 1.1rem;
-    font-family: var(--font-family);
-    color: var(--text-secondary);
-    max-width: 600px;
-    margin: 0 auto;
-    line-height: 1.6;
+  background: var(--bg-secondary, #f9fafb);
+  position: relative;
+  padding: var(--space-2xl, 3rem) 0;
 }
 
 .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: var(--spacing-xl);
-    position: relative;
-    z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-xl, 2rem);
+  margin-top: var(--space-xl, 2rem);
 }
 
+/* Feature Cards - Matching aks-cost-optimizer card style */
 .feature-card {
-    background: var(--bg-card);
-    border: 1px solid var(--green-200);
-    border-radius: var(--border-radius-lg);
-    padding: var(--spacing-xl);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: var(--shadow-card);
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: var(--backdrop-blur);
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  background: var(--bg-primary, #ffffff);
+  border-radius: var(--radius-lg, 0.75rem);
+  padding: var(--space-xl, 2rem);
+  box-shadow: var(--shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
+  border: 1px solid var(--border-color, #e5e7eb);
+  transition: all 0.3s ease;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
 .feature-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--gradient-green);
-    transform: scaleX(0);
-    transition: transform 0.4s ease;
-    transform-origin: left;
-}
-
-.feature-card::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, var(--green-100) 0%, transparent 70%);
-    transform: scale(0);
-    transition: transform 0.6s ease;
-    z-index: -1;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color, #7FB069) 0%, var(--primary-color-light, #94C37F) 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
 }
 
 .feature-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: var(--shadow-xl);
-    border-color: var(--green-400);
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1));
+  transform: translateY(-2px);
+  border-color: var(--primary-color-light, #94C37F);
 }
 
 .feature-card:hover::before {
-    transform: scaleX(1);
+  transform: scaleX(1);
 }
 
-.feature-card:hover::after {
-    transform: scale(1);
-}
-
-.feature-card:hover .feature-icon {
-    transform: scale(1.1) rotate(5deg);
-    filter: drop-shadow(0 0 12px var(--green-400));
-}
-
-.feature-card:hover .feature-icon svg {
-    stroke: var(--green-400);
-    filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.6));
-}
-
+/* Feature Icon */
 .feature-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 80px;
-    height: 80px;
-    margin: 0 auto var(--spacing-lg);
-    background: var(--gradient-green);
-    border-radius: 50%;
-    transition: all 0.4s ease;
-    box-shadow: var(--shadow-md);
-    position: relative;
-}
-
-.feature-icon::before {
-    content: '';
-    position: absolute;
-    top: -4px;
-    left: -4px;
-    right: -4px;
-    bottom: -4px;
-    background: var(--gradient-green);
-    border-radius: 50%;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    z-index: -1;
-}
-
-.feature-card:hover .feature-icon::before {
-    opacity: 0.3;
-    animation: pulse 2s infinite;
+  color: var(--primary-color, #7FB069);
+  margin-bottom: var(--space-lg, 1.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  transition: all 0.3s ease;
 }
 
 .feature-icon svg {
-    stroke: var(--text-white);
-    transition: all 0.4s ease;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  transition: all 0.3s ease;
 }
 
+.feature-card:hover .feature-icon svg {
+  transform: scale(1.1);
+  filter: drop-shadow(0 4px 8px rgba(127, 176, 105, 0.3));
+}
+
+/* Feature Content */
 .feature-title {
-    font-size: 1.3rem;
-    font-weight: 600;
-    font-family: var(--font-family);
-    color: var(--text-primary);
-    margin-bottom: var(--spacing-md);
-    position: relative;
-    text-align: center;
+  color: var(--text-primary, #111827);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: var(--space-md, 1rem);
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
 }
 
 .feature-description {
-    font-size: 0.95rem;
-    font-family: var(--font-family);
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin: 0;
-    text-align: center;
+  color: var(--text-secondary, #6b7280);
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin: 0;
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
 }
 
 /* Tech Specs Section */
 .tech-specs {
-    background: var(--gradient-hero);
-    position: relative;
+  background: var(--bg-secondary, #f9fafb);
+  padding: var(--space-2xl, 3rem) 0;
 }
 
 .tech-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: var(--spacing-xl);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-xl, 2rem);
+  margin-top: var(--space-xl, 2rem);
 }
 
+/* Tech Items - Matching feature card style */
 .tech-item {
-    background: var(--bg-card);
-    border: 1px solid var(--green-200);
-    border-radius: var(--border-radius-lg);
-    padding: var(--spacing-xl);
-    box-shadow: var(--shadow-card);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
+  background: var(--bg-primary, #ffffff);
+  border-radius: var(--radius-lg, 0.75rem);
+  padding: var(--space-lg, 1.5rem);
+  box-shadow: var(--shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
+  border: 1px solid var(--border-color, #e5e7eb);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .tech-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: var(--gradient-green);
-    transform: scaleY(0);
-    transition: transform 0.3s ease;
-    transform-origin: bottom;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--primary-color, #7FB069) 0%, var(--primary-color-light, #94C37F) 100%);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+  transform-origin: bottom;
 }
 
 .tech-item:hover {
-    transform: translateX(5px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--green-300);
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1));
+  transform: translateY(-2px);
+  border-color: var(--primary-color-light, #94C37F);
 }
 
 .tech-item:hover::before {
-    transform: scaleY(1);
+  transform: scaleY(1);
 }
 
 .tech-item strong {
-    color: var(--green-600);
-    font-weight: 600;
-    font-family: var(--font-family);
-    font-size: 1.1rem;
-    display: block;
-    margin-bottom: var(--spacing-sm);
+  color: var(--primary-color, #7FB069);
+  font-size: 1rem;
+  font-weight: 600;
+  display: block;
+  margin-bottom: var(--space-sm, 0.5rem);
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
 }
 
 .tech-item {
-    font-family: var(--font-family);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    color: var(--text-secondary);
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--text-secondary, #6b7280);
 }
 
-/* Animated elements */
+/* Section Headers */
+.section-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl, 3rem);
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  margin-bottom: var(--space-md, 1rem);
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color, #7FB069) 0%, var(--primary-color-light, #94C37F) 100%);
+  border-radius: 2px;
+}
+
+.section-description {
+  font-size: 1.125rem;
+  color: var(--text-secondary, #6b7280);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
+}
+
+/* Animation Classes */
 .animate-on-scroll {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease;
 }
 
+.animate-on-scroll.animate,
 .animate-on-scroll.animated {
-    opacity: 1;
-    transform: translateY(0);
+  opacity: 1;
+  transform: translateY(0);
 }
 
-/* Responsive adjustments */
+/* Benefits Section - Enterprise styled */
+.enterprise-benefits {
+  background: linear-gradient(135deg, var(--bg-primary, #ffffff) 0%, var(--bg-secondary, #f9fafb) 100%);
+  padding: var(--space-2xl, 3rem) 0;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-xl, 2rem);
+  margin-top: var(--space-xl, 2rem);
+}
+
+.benefit-card {
+  background: var(--bg-primary, #ffffff);
+  border-radius: var(--radius-lg, 0.75rem);
+  padding: var(--space-xl, 2rem);
+  text-align: center;
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1));
+  border: 1px solid var(--border-color, #e5e7eb);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.benefit-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color, #7FB069) 0%, var(--primary-color-light, #94C37F) 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.benefit-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
+}
+
+.benefit-card:hover::before {
+  transform: scaleX(1);
+}
+
+.benefit-card.primary {
+  background: linear-gradient(135deg, rgba(127, 176, 105, 0.03) 0%, white 100%);
+}
+
+.benefit-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-lg, 1.5rem);
+  display: block;
+  color: var(--primary-color, #7FB069);
+}
+
+.benefit-icon i {
+  font-size: 3rem;
+  color: var(--primary-color, #7FB069);
+  transition: all 0.3s ease;
+}
+
+.benefit-card:hover .benefit-icon i {
+  transform: scale(1.1);
+  filter: drop-shadow(0 4px 8px rgba(127, 176, 105, 0.3));
+}
+
+.benefit-title {
+  color: var(--text-primary, #111827);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: var(--space-md, 1rem);
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
+}
+
+.benefit-description {
+  color: var(--text-secondary, #6b7280);
+  line-height: 1.6;
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
+}
+
+/* Enhanced Benefits Layout */
+.benefits-primary-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl, 2rem);
+  margin-top: var(--space-xl, 2rem);
+  margin-bottom: var(--space-xl, 2rem);
+}
+
+.benefit-card.featured {
+  background: linear-gradient(135deg, rgba(127, 176, 105, 0.05) 0%, var(--bg-primary, #ffffff) 100%);
+  border: 2px solid var(--primary-color-light, #94C37F);
+  padding: var(--space-2xl, 3rem);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-xl, 2rem);
+  min-height: 200px;
+}
+
+.benefit-icon-large {
+  font-size: 4rem;
+  color: var(--primary-color, #7FB069);
+  flex-shrink: 0;
+  margin-top: var(--space-sm, 0.5rem);
+}
+
+.benefit-content {
+  flex: 1;
+}
+
+.benefit-metrics {
+  display: flex;
+  gap: var(--space-xl, 2rem);
+  margin-top: var(--space-lg, 1.5rem);
+}
+
+.benefit-metric {
+  text-align: center;
+}
+
+.metric-number {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-color, #7FB069);
+  line-height: 1;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  color: var(--text-light, #9ca3af);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: var(--space-xs, 0.25rem);
+  display: block;
+}
+
+.benefit-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm, 0.5rem);
+  margin-top: var(--space-lg, 1.5rem);
+}
+
+.feature-tag {
+  background: rgba(127, 176, 105, 0.1);
+  color: var(--primary-color, #7FB069);
+  padding: var(--space-xs, 0.25rem) var(--space-sm, 0.5rem);
+  border-radius: var(--radius-sm, 0.25rem);
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 0.25rem);
+  border: 1px solid rgba(127, 176, 105, 0.2);
+}
+
+.feature-tag i {
+  font-size: 0.625rem;
+}
+
+.benefits-secondary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-lg, 1.5rem);
+  margin-top: var(--space-xl, 2rem);
+}
+
+.benefit-card.compact {
+  padding: var(--space-lg, 1.5rem);
+  text-align: center;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.benefit-card.compact .benefit-icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--space-md, 1rem);
+}
+
+.benefit-card.compact .benefit-title {
+  font-size: 1.125rem;
+  margin-bottom: var(--space-sm, 0.5rem);
+}
+
+.benefit-card.compact .benefit-description {
+  font-size: 0.875rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .benefits-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+  
+  .benefits-primary-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg, 1.5rem);
+  }
+  
+  .benefit-card.featured {
+    flex-direction: column;
+    text-align: center;
+    min-height: auto;
+  }
+  
+  .benefit-metrics {
+    justify-content: center;
+  }
+  
+  .benefits-secondary-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
-    .features-grid {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-lg);
-    }
-    
-    .feature-card {
-        padding: var(--spacing-lg);
-    }
-    
-    .section-title {
-        font-size: 2rem;
-    }
-    
-    .section-description {
-        font-size: 1rem;
-    }
-    
-    .feature-icon {
-        width: 70px;
-        height: 70px;
-    }
-    
-    .feature-icon svg {
-        width: 40px;
-        height: 40px;
-    }
-    
-    .feature-title {
-        font-size: 1.2rem;
-    }
-    
-    .feature-description {
-        font-size: 0.9rem;
-    }
-    
-    .tech-grid {
-        grid-template-columns: 1fr;
-    }
+  .features-grid,
+  .tech-grid,
+  .benefits-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg, 1.5rem);
+  }
+  
+  .feature-card,
+  .tech-item,
+  .benefit-card {
+    padding: var(--space-lg, 1.5rem);
+  }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .section-description {
+    font-size: 1rem;
+  }
+  
+  .feature-title,
+  .benefit-title {
+    font-size: 1.125rem;
+  }
+  
+  .feature-description,
+  .benefit-description {
+    font-size: 0.875rem;
+  }
+  
+  .benefit-icon {
+    font-size: 2.5rem;
+  }
 }
 
 @media (max-width: 480px) {
-    .section-title {
-        font-size: 1.8rem;
-    }
-    
-    .section-description {
-        font-size: 0.95rem;
-    }
-    
-    .feature-icon {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .feature-icon svg {
-        width: 36px;
-        height: 36px;
-    }
-    
-    .feature-title {
-        font-size: 1.1rem;
-    }
-    
-    .feature-description {
-        font-size: 0.85rem;
-    }
+  .section-title {
+    font-size: 1.75rem;
+  }
+  
+  .section-description {
+    font-size: 0.95rem;
+  }
+  
+  .feature-card,
+  .tech-item,
+  .benefit-card {
+    padding: var(--space-lg, 1.5rem);
+  }
+  
+  .benefit-icon {
+    font-size: 2rem;
+  }
 }

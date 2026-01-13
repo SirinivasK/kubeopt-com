@@ -6,11 +6,11 @@ Chart.defaults.font.family = "'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans
 Chart.defaults.font.size = 12;
 Chart.defaults.color = '#374151';
 
-// Color Palette - Matching the green theme
+// Color Palette - Matching aks-cost-optimizer tool exact colors
 const chartColors = {
-    primary: '#22c55e',
-    primaryLight: '#4ade80',
-    primaryDark: '#16a34a',
+    primary: '#7FB069',
+    primaryLight: '#94C37F',
+    primaryDark: '#6BA055',
     secondary: '#3b82f6',
     secondaryLight: '#60a5fa',
     accent: '#f59e0b',
@@ -23,11 +23,11 @@ const chartColors = {
     
     // Gradient colors
     gradients: {
-        green: ['#22c55e', '#16a34a'],
+        green: ['#7FB069', '#6BA055'],
         blue: ['#3b82f6', '#2563eb'],
-        mixed: ['#22c55e', '#3b82f6', '#f59e0b'],
-        cost: ['#ef4444', '#f59e0b', '#22c55e'],
-        performance: ['#22c55e', '#4ade80', '#86efac']
+        mixed: ['#7FB069', '#3b82f6', '#f59e0b'],
+        cost: ['#ef4444', '#f59e0b', '#7FB069'],
+        performance: ['#7FB069', '#94C37F', '#86efac']
     }
 };
 
@@ -59,6 +59,9 @@ function initializeCostTrendsChart() {
     const ctx = document.getElementById('costTrendsChart');
     if (!ctx) return;
     
+    // Destroy existing chart if it exists
+    Chart.getChart(ctx)?.destroy();
+    
     const chartCtx = ctx.getContext('2d');
     
     new Chart(chartCtx, {
@@ -67,52 +70,52 @@ function initializeCostTrendsChart() {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
             datasets: [{
                 label: 'Current Cost',
-                data: [12500, 13200, 12800, 14100, 13800, 8420],
-                borderColor: chartColors.error,
+                data: [18420, 19200, 18800, 19100, 18900, 18420],
+                borderColor: '#94C37F',
                 backgroundColor: function(context) {
                     const chart = context.chart;
                     const {ctx, chartArea} = chart;
                     if (!chartArea) return null;
                     
                     const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-                    gradient.addColorStop(0, 'rgba(239, 68, 68, 0.3)');
-                    gradient.addColorStop(1, 'rgba(239, 68, 68, 0.05)');
+                    gradient.addColorStop(0, 'rgba(148, 195, 127, 0.2)');
+                    gradient.addColorStop(1, 'rgba(148, 195, 127, 0.02)');
                     return gradient;
                 },
                 borderWidth: 3,
                 fill: true,
                 tension: 0.4,
-                pointBackgroundColor: chartColors.error,
+                pointBackgroundColor: '#94C37F',
                 pointBorderColor: chartColors.white,
                 pointBorderWidth: 3,
                 pointRadius: 6,
                 pointHoverRadius: 8,
-                pointHoverBackgroundColor: chartColors.error,
+                pointHoverBackgroundColor: '#94C37F',
                 pointHoverBorderColor: chartColors.white,
                 pointHoverBorderWidth: 3
             }, {
                 label: 'Optimized Cost',
-                data: [8200, 8400, 8100, 8800, 8600, 5240],
-                borderColor: chartColors.primary,
+                data: [11052, 11520, 11280, 11460, 11340, 11052],
+                borderColor: '#7FB069',
                 backgroundColor: function(context) {
                     const chart = context.chart;
                     const {ctx, chartArea} = chart;
                     if (!chartArea) return null;
                     
                     const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-                    gradient.addColorStop(0, 'rgba(34, 197, 94, 0.3)');
-                    gradient.addColorStop(1, 'rgba(34, 197, 94, 0.05)');
+                    gradient.addColorStop(0, 'rgba(127, 176, 105, 0.3)');
+                    gradient.addColorStop(1, 'rgba(127, 176, 105, 0.05)');
                     return gradient;
                 },
                 borderWidth: 3,
                 fill: true,
                 tension: 0.4,
-                pointBackgroundColor: chartColors.primary,
+                pointBackgroundColor: '#7FB069',
                 pointBorderColor: chartColors.white,
                 pointBorderWidth: 3,
                 pointRadius: 6,
                 pointHoverRadius: 8,
-                pointHoverBackgroundColor: chartColors.primary,
+                pointHoverBackgroundColor: '#7FB069',
                 pointHoverBorderColor: chartColors.white,
                 pointHoverBorderWidth: 3
             }]
@@ -142,7 +145,7 @@ function initializeCostTrendsChart() {
                     backgroundColor: 'rgba(255, 255, 255, 0.95)',
                     titleColor: '#111827',
                     bodyColor: '#374151',
-                    borderColor: '#22c55e',
+                    borderColor: '#7FB069',
                     borderWidth: 2,
                     cornerRadius: 12,
                     displayColors: true,
@@ -198,6 +201,9 @@ function initializeNodeUtilizationChart() {
     const ctx = document.getElementById('nodeUtilizationChart');
     if (!ctx) return;
     
+    // Destroy existing chart if it exists
+    Chart.getChart(ctx)?.destroy();
+    
     const chartCtx = ctx.getContext('2d');
     
     // Node data from your screenshots
@@ -214,25 +220,25 @@ function initializeNodeUtilizationChart() {
             datasets: [{
                 label: 'CPU Actual %',
                 data: [45, 52, 38, 61, 33, 47, 55, 42, 39],
-                backgroundColor: chartColors.error,
+                backgroundColor: '#7FB069',
                 borderRadius: 4,
                 borderSkipped: false,
             }, {
                 label: 'CPU Request %',
                 data: [35, 42, 28, 51, 23, 37, 45, 32, 29],
-                backgroundColor: chartColors.warning,
+                backgroundColor: '#94C37F',
                 borderRadius: 4,
                 borderSkipped: false,
             }, {
                 label: 'Memory Actual %',
                 data: [65, 72, 58, 81, 53, 67, 75, 62, 59],
-                backgroundColor: chartColors.primary,
+                backgroundColor: '#6BA055',
                 borderRadius: 4,
                 borderSkipped: false,
             }, {
                 label: 'Memory Request %',
                 data: [55, 62, 48, 71, 43, 57, 65, 52, 49],
-                backgroundColor: chartColors.secondary,
+                backgroundColor: '#7FB069',
                 borderRadius: 4,
                 borderSkipped: false,
             }]
@@ -259,7 +265,7 @@ function initializeNodeUtilizationChart() {
                     backgroundColor: 'rgba(255, 255, 255, 0.95)',
                     titleColor: '#111827',
                     bodyColor: '#374151',
-                    borderColor: '#22c55e',
+                    borderColor: '#7FB069',
                     borderWidth: 2,
                     cornerRadius: 12,
                     callbacks: {
@@ -316,21 +322,24 @@ function initializeCostDistributionChart() {
     const ctx = document.getElementById('costDistributionChart');
     if (!ctx) return;
     
+    // Destroy existing chart if it exists
+    Chart.getChart(ctx)?.destroy();
+    
     const chartCtx = ctx.getContext('2d');
     
     new Chart(chartCtx, {
         type: 'doughnut',
         data: {
-            labels: ['Node Pools', 'Storage', 'Networking', 'Control Plane', 'Container Registry', 'Other'],
+            labels: ['production', 'staging', 'development', 'monitoring', 'kube-system', 'ingress-nginx'],
             datasets: [{
-                data: [1180167, 548864, 532390, 438122, 87339, 115554],
+                data: [8420, 3280, 6720, 1200, 800, 1580],
                 backgroundColor: [
-                    '#3b82f6', // Blue for Node Pools (largest)
-                    '#f59e0b', // Orange for Storage  
-                    '#10b981', // Green for Networking
-                    '#8b5cf6', // Purple for Control Plane
-                    '#ef4444', // Red for Container Registry
-                    '#6b7280'  // Gray for Other
+                    '#7FB069', // Primary green
+                    '#94C37F', // Primary green light  
+                    '#6BA055', // Primary green dark
+                    '#7FB069', // Primary green
+                    '#94C37F', // Primary green light
+                    '#6BA055'  // Primary green dark
                 ],
                 borderColor: chartColors.white,
                 borderWidth: 3,
@@ -361,7 +370,7 @@ function initializeCostDistributionChart() {
                                     const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
                                     const percentage = ((value / total) * 100).toFixed(1);
                                     return {
-                                        text: `${label}: $${(value/1000).toFixed(0)}K (${percentage}%)`,
+                                        text: `${label}: $${value.toLocaleString()} (${percentage}%)`,
                                         fillStyle: data.datasets[0].backgroundColor[i],
                                         hidden: false,
                                         index: i
@@ -376,7 +385,7 @@ function initializeCostDistributionChart() {
                     backgroundColor: 'rgba(255, 255, 255, 0.95)',
                     titleColor: '#111827',
                     bodyColor: '#374151',
-                    borderColor: '#22c55e',
+                    borderColor: '#7FB069',
                     borderWidth: 2,
                     cornerRadius: 12,
                     callbacks: {
@@ -384,7 +393,7 @@ function initializeCostDistributionChart() {
                             const value = context.parsed;
                             const total = context.dataset.data.reduce((a, b) => a + b, 0);
                             const percentage = ((value / total) * 100).toFixed(1);
-                            return `${context.label}: $${(value/1000).toFixed(0)}K (${percentage}%)`;
+                            return `${context.label}: $${value.toLocaleString()} (${percentage}%)`;
                         }
                     }
                 }
@@ -404,18 +413,21 @@ function initializeSavingsBreakdownChart() {
     const ctx = document.getElementById('savingsBreakdownChart');
     if (!ctx) return;
     
+    // Destroy existing chart if it exists
+    Chart.getChart(ctx)?.destroy();
+    
     const chartCtx = ctx.getContext('2d');
     
     new Chart(chartCtx, {
         type: 'doughnut',
         data: {
-            labels: ['Node Pools', 'Networking', 'Storage'],
+            labels: ['production', 'staging', 'development'],
             datasets: [{
-                data: [159.98, 26.62, 0], // Values from your screenshot
+                data: [2100, 1200, 4068], // Values matching demo output
                 backgroundColor: [
-                    '#3b82f6', // Blue for Node Pools
-                    '#22c55e', // Green for Networking
-                    '#6b7280'  // Gray for Storage (0 value)
+                    '#7FB069', // Primary green
+                    '#94C37F', // Primary green light
+                    '#6BA055'  // Primary green dark
                 ],
                 borderColor: chartColors.white,
                 borderWidth: 3,
@@ -446,7 +458,7 @@ function initializeSavingsBreakdownChart() {
                                     const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
                                     const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
                                     return {
-                                        text: `${label}: $${value.toFixed(2)} (${percentage}%)`,
+                                        text: `${label}: $${value.toLocaleString()} (${percentage}%)`,
                                         fillStyle: data.datasets[0].backgroundColor[i],
                                         hidden: false,
                                         index: i
@@ -461,7 +473,7 @@ function initializeSavingsBreakdownChart() {
                     backgroundColor: 'rgba(255, 255, 255, 0.95)',
                     titleColor: '#111827',
                     bodyColor: '#374151',
-                    borderColor: '#22c55e',
+                    borderColor: '#7FB069',
                     borderWidth: 2,
                     cornerRadius: 12,
                     callbacks: {
@@ -469,7 +481,7 @@ function initializeSavingsBreakdownChart() {
                             const value = context.parsed;
                             const total = context.dataset.data.reduce((a, b) => a + b, 0);
                             const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-                            return `${context.label}: $${value.toFixed(2)} (${percentage}%)`;
+                            return `${context.label}: $${value.toLocaleString()} (${percentage}%)`;
                         }
                     }
                 }

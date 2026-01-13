@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{% block meta_description %}kubeopt - AI-Powered AKS Cost Optimization. Enterprise-grade optimization in a secure container.{% endblock %}">
-    <meta name="keywords" content="kubernetes, aks, cost optimization, ml, docker, devops, nivaya, kubeopt">
+    <meta name="description" content="{% block meta_description %}kubeopt - Advanced AKS Cost Optimization. Enterprise-grade algorithmic optimization in a secure container.{% endblock %}">
+    <meta name="keywords" content="kubernetes, aks, cost optimization, algorithmic analysis, docker, devops, nivaya, kubeopt">
     <meta name="author" content="Nivaya Technologies">
     <meta name="company" content="Nivaya Technologies">
     
     <!-- Open Graph -->
-    <meta property="og:title" content="{% block og_title %}kubeopt - AI-Powered AKS Cost Optimization{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}Deploy our sophisticated cost optimizer in your environment. 85% accuracy with real-time analysis.{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}kubeopt - Advanced AKS Cost Optimization{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Deploy our sophisticated cost optimizer in your environment. Advanced algorithmic analysis with real-time insights.{% endblock %}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.url }}">
     
@@ -19,11 +19,7 @@
     <!-- Stylesheets -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/features.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/charts.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/sections.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/contact-download.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
     
     <!-- Favicon and Icons -->
     <link rel="icon" type="image/png" sizes="64x64" href="{{ url_for('static', filename='images/kubeopt_eyecon.png') }}">
@@ -32,8 +28,8 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/kubeopt_eyecon.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/kubeopt_eyecon.png') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/kubeopt_eyecon.png') }}">
-    <meta name="theme-color" content="#22c55e">
-    <meta name="msapplication-TileColor" content="#22c55e">
+    <meta name="theme-color" content="#7FB069">
+    <meta name="msapplication-TileColor" content="#7FB069">
     <meta name="msapplication-TileImage" content="{{ url_for('static', filename='images/kubeopt_eyecon.png') }}">
     <style>
         /* Force larger favicon in some browsers */
@@ -46,6 +42,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     {% block extra_head %}{% endblock %}
 </head>
@@ -60,6 +59,7 @@
             
             <ul class="nav-links">
                 <li><a href="#hero" class="nav-link">Home</a></li>
+                <li><a href="#benefits" class="nav-link">Benefits</a></li>
                 <li><a href="#features" class="nav-link">Features</a></li>
                 <li><a href="#pricing" class="nav-link">Pricing</a></li>
                 <li><a href="#docs" class="nav-link">Docs</a></li>
@@ -81,6 +81,7 @@
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-content">
             <a href="#hero" class="mobile-nav-link">Home</a>
+            <a href="#benefits" class="mobile-nav-link">Benefits</a>
             <a href="#features" class="mobile-nav-link">Features</a>
             <a href="#pricing" class="mobile-nav-link">Pricing</a>
             <a href="#docs" class="mobile-nav-link">Docs</a>
@@ -112,64 +113,77 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-section">
-                    <h3 class="footer-title">kubeopt</h3>
+                <div class="footer-section footer-brand">
+                    <div class="footer-logo-container">
+                        <h3 class="footer-title">KUBEOPT</h3>
+                    </div>
                     <p class="footer-description">
-                        AI-powered AKS cost optimization that runs securely in your environment.
-                        No data transmission, maximum security.
+                        Your comprehensive Kubernetes cost optimization platform featuring advanced algorithmic analysis, 
+                        real-time insights, and enterprise security. 
                     </p>
-                    <div class="footer-social">
-                        <a href="#" class="social-link" aria-label="GitHub">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                            </svg>
-                        </a>
-                        <a href="#" class="social-link" aria-label="Twitter">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-                            </svg>
-                        </a>
+                    <div class="footer-stats">
+                        <div class="footer-stat">
+                            <span class="footer-stat-number">40%</span>
+                            <span class="footer-stat-label">Typical Savings</span>
+                        </div>
+                        <div class="footer-stat">
+                            <span class="footer-stat-number">5min</span>
+                            <span class="footer-stat-label">Setup Time</span>
+                        </div>
+                        <div class="footer-stat">
+                            <span class="footer-stat-number">100%</span>
+                            <span class="footer-stat-label">Secure</span>
+                        </div>
                     </div>
                 </div>
 
                 <div class="footer-section">
-                    <h4 class="footer-subtitle">Product</h4>
+                    <h4 class="footer-subtitle"><i class="fas fa-cube"></i> Platform</h4>
                     <ul class="footer-links">
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="#pricing">Pricing</a></li>
-                        <li><a href="#docs">Documentation</a></li>
-                        <li><a href="#api">API Reference</a></li>
+                        <li><a href="#features"><i class="fas fa-chart-line"></i> Cost Analytics</a></li>
+                        <li><a href="#demo"><i class="fas fa-tachometer-alt"></i> Live Dashboard</a></li>
+                        <li><a href="#pricing"><i class="fas fa-dollar-sign"></i> Pricing</a></li>
+                        <li><a href="#download"><i class="fas fa-download"></i> Enterprise Deploy</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-section">
-                    <h4 class="footer-subtitle">Company</h4>
+                    <h4 class="footer-subtitle"><i class="fas fa-book"></i> Resources</h4>
                     <ul class="footer-links">
-                        <li><a href="#about">About Us</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                        <li><a href="#privacy">Privacy Policy</a></li>
-                        <li><a href="#terms">Terms of Service</a></li>
+                        <li><a href="#docs"><i class="fas fa-file-alt"></i> Documentation</a></li>
+                        <li><a href="#api"><i class="fas fa-code"></i> API Reference</a></li>
+                        <li><a href="#best-practices"><i class="fas fa-lightbulb"></i> Best Practices</a></li>
+                        <li><a href="#config"><i class="fas fa-cog"></i> Configuration</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-section">
-                    <h4 class="footer-subtitle">Support</h4>
+                    <h4 class="footer-subtitle"><i class="fas fa-headset"></i> Support</h4>
                     <ul class="footer-links">
-                        <li><a href="#help">Help Center</a></li>
-                        <li><a href="#community">Community</a></li>
-                        <li><a href="#status">System Status</a></li>
-                        <li><a href="#contact">Get Support</a></li>
+                        <li><a href="#contact"><i class="fas fa-envelope"></i> Contact Sales</a></li>
+                        <li><a href="#help"><i class="fas fa-question-circle"></i> Help Center</a></li>
+                        <li><a href="#enterprise"><i class="fas fa-building"></i> Enterprise Support</a></li>
+                        <li><a href="#status"><i class="fas fa-shield-alt"></i> System Status</a></li>
                     </ul>
                 </div>
             </div>
 
             <div class="footer-bottom">
-                <p class="footer-copyright">
-                    © 2025 kubeopt, All rights reserved. Nivaya Technologies
-                </p>
-                <p class="footer-tagline">
-                    Secure • Enterprise-Ready
-                </p>
+                <div class="footer-bottom-left">
+                    <p class="footer-copyright">
+                        © 2025 <strong>KUBEOPT</strong> by <strong>Nivaya Technologies</strong>. Intelligent. Insightful. Illuminating. All rights reserved.
+                    </p>
+                    <p class="footer-legal">
+                        <a href="#privacy">Privacy Policy</a> • <a href="#terms">Terms of Service</a> • <a href="#security">Security</a>
+                    </p>
+                </div>
+                <div class="footer-bottom-right">
+                    <div class="footer-badges">
+                        <span class="footer-badge"><i class="fas fa-shield-alt"></i> Enterprise Security</span>
+                        <span class="footer-badge"><i class="fas fa-lock"></i> Zero Data Transmission</span>
+                        <span class="footer-badge"><i class="fas fa-server"></i> Self-Hosted</span>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>

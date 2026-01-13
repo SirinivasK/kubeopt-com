@@ -11,7 +11,7 @@ provider "azurerm" {
   
   features {
     resource_group {
-      prevent_deletion_if_contains_resources = true
+      prevent_deletion_if_contains_resources = false
     }
     
     key_vault {
@@ -63,9 +63,9 @@ resource "azurerm_kubernetes_cluster" "kubeopt" {
   # kubernetes_version omitted to use AKS default for standard tier
   
   # Prevent accidental cluster deletion
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 
   default_node_pool {
     name                 = "default"
@@ -110,21 +110,21 @@ resource "azurerm_kubernetes_cluster" "kubeopt" {
     log_analytics_workspace_id = azurerm_log_analytics_workspace.kubeopt.id
   }
 
-  # Auto-scaler profile for cost optimization (AzureRM v4.x compatible)
+  # Aggressive auto-scaler profile for maximum cost optimization
   auto_scaler_profile {
     balance_similar_node_groups      = false
-    expander                        = "random"
-    max_graceful_termination_sec    = "600"
-    max_node_provisioning_time      = "15m"
-    max_unready_nodes              = 3
-    max_unready_percentage         = 45
-    new_pod_scale_up_delay         = "10s"
-    scale_down_delay_after_add     = "10m"
-    scale_down_delay_after_delete  = "10s"
-    scale_down_delay_after_failure = "3m"
-    scan_interval                  = "10s"
-    scale_down_utilization_threshold = "0.5"
-    empty_bulk_delete_max          = "10"
+    expander                        = "least-waste"  # Choose nodes more cost-efficiently
+    max_graceful_termination_sec    = "300"          # Faster termination for cost savings
+    max_node_provisioning_time      = "10m"         # Faster provisioning
+    max_unready_nodes              = 1              # Keep unready nodes low
+    max_unready_percentage         = 10             # More aggressive scaling down
+    new_pod_scale_up_delay         = "5s"           # React faster to scale up needs
+    scale_down_delay_after_add     = "5m"           # Scale down faster after adding nodes
+    scale_down_delay_after_delete  = "5s"           # Quick scale down
+    scale_down_delay_after_failure = "1m"           # Quick recovery from failures
+    scan_interval                  = "5s"           # More frequent scanning for efficiency
+    scale_down_utilization_threshold = "0.3"        # More aggressive scale-down threshold
+    empty_bulk_delete_max          = "3"            # Smaller bulk deletions
     skip_nodes_with_local_storage  = true
     skip_nodes_with_system_pods    = true
   }
@@ -323,5 +323,37 @@ resource "azurerm_monitor_diagnostic_setting" "kubeopt" {
 
   enabled_metric {
     category = "AllMetrics"
+  }
+}
+
+# Budget and cost alerts for cost monitoring
+resource "azurerm_consumption_budget_resource_group" "kubeopt_budget" {
+  name              = "kubeopt-monthly-budget"
+  resource_group_id = azurerm_resource_group.kubeopt.id
+
+  amount     = 50  # $50 monthly budget
+  time_grain = "Monthly"
+
+  time_period {
+    start_date = "2026-01-01T00:00:00Z"
+    end_date   = "2027-12-31T23:59:59Z"
+  }
+
+  notification {
+    enabled        = true
+    threshold      = 80
+    operator       = "GreaterThan"
+    threshold_type = "Actual"
+    
+    contact_emails = [var.contact_email]
+  }
+
+  notification {
+    enabled        = true
+    threshold      = 90
+    operator       = "GreaterThan"
+    threshold_type = "Forecasted"
+    
+    contact_emails = [var.contact_email]
   }
 }

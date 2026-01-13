@@ -68,6 +68,7 @@ class Contact(db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), nullable=False)
     company = db.Column(db.String(100))
+    subject = db.Column(db.String(50), default='general')
     message = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(20), default='new')
@@ -83,6 +84,15 @@ class Download(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), nullable=False)
     version = db.Column(db.String(20), default='latest')
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Event(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    action = db.Column(db.String(50), nullable=False)
+    label = db.Column(db.String(100))
+    value = db.Column(db.String(200))
+    ip_address = db.Column(db.String(45))
+    user_agent = db.Column(db.String(200))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 # Routes
@@ -116,6 +126,7 @@ def contact():
             name=request.form.get('name'),
             email=request.form.get('email'),
             company=request.form.get('company'),
+            subject=request.form.get('subject', 'general'),
             message=request.form.get('message')
         )
         db.session.add(contact)
@@ -179,11 +190,22 @@ def api_analytics_event():
         data = request.get_json() or {}
         action = data.get('action', 'unknown')
         label = data.get('label', '')
+        value = data.get('value', '')
         
-        # Simple event tracking - you can enhance this with a proper Event model
-        # For now, we'll just return success to prevent console errors
+        # Store event in database
+        event = Event(
+            action=action,
+            label=label,
+            value=str(value)[:200] if value else None,
+            ip_address=request.remote_addr,
+            user_agent=request.headers.get('User-Agent', '')[:200]
+        )
+        db.session.add(event)
+        db.session.commit()
+        
         return jsonify({'success': True})
     except Exception as e:
+        print(f"Error tracking event: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/demo-data')
@@ -236,12 +258,17 @@ def health_check():
 def admin_dashboard():
     """Simple admin dashboard"""
     contacts = Contact.query.order_by(Contact.created_at.desc()).limit(10).all()
+    recent_events = Event.query.order_by(Event.timestamp.desc()).limit(10).all()
     stats = {
         'total_contacts': Contact.query.count(),
         'total_downloads': Download.query.count(),
-        'total_views': PageView.query.count()
+        'total_views': PageView.query.count(),
+        'total_events': Event.query.count()
     }
-    return render_template('admin/dashboard.html', contacts=contacts, stats=stats)
+    return render_template('admin/dashboard.html', 
+                         contacts=contacts, 
+                         events=recent_events, 
+                         stats=stats)
 
 # Utility functions
 def track_page_view(page):

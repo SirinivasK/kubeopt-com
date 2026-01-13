@@ -1,0 +1,409 @@
+/* ==========================================
+   RESPONSIVE DESIGN - KUBEOPT AKS COST OPTIMIZER
+   ========================================== */
+
+/* Large Desktop (1200px and up) */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1200px;
+    }
+    
+    .hero-stats {
+        gap: var(--spacing-2xl);
+    }
+    
+    .stat-number {
+        font-size: 3rem;
+    }
+}
+
+/* Desktop (992px and up) */
+@media (min-width: 992px) {
+    .features-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .benefits-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-2xl);
+    }
+    
+    .tech-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Tablet (768px and up) */
+@media (max-width: 991px) {
+    .nav-links {
+        display: none;
+    }
+    
+    .mobile-menu-toggle {
+        display: flex;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.25rem;
+    }
+    
+    .hero-stats {
+        flex-wrap: wrap;
+        gap: var(--spacing-lg);
+    }
+    
+    .stat-item {
+        flex: 1;
+        min-width: 150px;
+    }
+    
+    .benefits-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-lg);
+    }
+    
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-lg);
+    }
+    
+    .tech-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-lg);
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-lg);
+    }
+    
+    .download-options {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .download-card {
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .demo-terminal {
+        margin-top: var(--spacing-xl);
+    }
+    
+    .demo-output {
+        font-size: 0.8rem;
+        padding: var(--spacing-lg);
+    }
+}
+
+/* Mobile (576px and below) */
+@media (max-width: 767px) {
+    .container {
+        padding: 0 var(--spacing-lg);
+    }
+    
+    .hero {
+        padding: var(--spacing-2xl) 0;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+        line-height: 1.2;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .hero-tagline {
+        font-size: 0.9rem;
+    }
+    
+    .hero-description {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    
+    .hero-stats {
+        flex-direction: column;
+        gap: var(--spacing-md);
+        padding: var(--spacing-lg) 0;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+    }
+    
+    .hero-actions {
+        flex-direction: column;
+        gap: var(--spacing-md);
+        width: 100%;
+    }
+    
+    .hero-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .benefits-grid,
+    .features-grid,
+    .tech-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .benefit-card,
+    .feature-card,
+    .tech-item {
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .chart-container {
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .chart-header h3 {
+        font-size: 1rem;
+    }
+    
+    .metric-badge {
+        font-size: 0.8rem;
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+    
+    .demo-terminal {
+        margin-top: var(--spacing-lg);
+    }
+    
+    .demo-title {
+        font-size: 1.1rem;
+    }
+    
+    .demo-output {
+        font-size: 0.75rem;
+        padding: var(--spacing-md);
+        line-height: 1.4;
+    }
+    
+    .code-block,
+    .code-snippet {
+        font-size: 0.8rem;
+        padding: var(--spacing-md);
+        overflow-x: auto;
+    }
+    
+    .quick-start-title {
+        font-size: 1.1rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .section-description {
+        font-size: 0.95rem;
+    }
+    
+    .pricing-cards {
+        flex-direction: column;
+        gap: var(--spacing-lg);
+    }
+    
+    .pricing-card {
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .docs-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .contact-content {
+        flex-direction: column;
+        gap: var(--spacing-xl);
+    }
+    
+    .contact-info,
+    .contact-form {
+        width: 100%;
+    }
+    
+    .nav-actions .btn {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: 0.9rem;
+    }
+    
+    .logo-text {
+        font-size: 1.25rem;
+    }
+    
+    .mobile-menu {
+        display: block;
+    }
+}
+
+/* Extra Small Mobile (480px and below) */
+@media (max-width: 479px) {
+    .container {
+        padding: 0 var(--spacing-md);
+    }
+    
+    .hero-title {
+        font-size: 1.75rem;
+    }
+    
+    .hero-logo {
+        height: 48px;
+        width: 48px;
+    }
+    
+    .stat-number {
+        font-size: 1.75rem;
+    }
+    
+    .benefit-icon {
+        font-size: 2.5rem;
+    }
+    
+    .feature-icon svg {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .demo-output {
+        font-size: 0.7rem;
+        padding: var(--spacing-sm);
+    }
+    
+    .code-block,
+    .code-snippet code {
+        font-size: 0.7rem;
+    }
+    
+    .quick-start-features {
+        font-size: 0.8rem;
+    }
+    
+    .section {
+        padding: var(--spacing-2xl) 0;
+    }
+    
+    .section-title {
+        font-size: 1.75rem;
+    }
+    
+    .logo-text {
+        font-size: 1.1rem;
+    }
+    
+    .nav-actions .btn {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: 0.8rem;
+    }
+}
+
+/* Print styles */
+@media print {
+    .header,
+    .mobile-menu,
+    .hero-actions,
+    .nav-actions,
+    .contact-form,
+    .download-options {
+        display: none !important;
+    }
+    
+    .hero,
+    .section {
+        page-break-inside: avoid;
+    }
+    
+    .demo-terminal {
+        break-inside: avoid;
+    }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .hero-logo,
+    .logo-icon {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Dark mode preference (future enhancement) */
+@media (prefers-color-scheme: dark) {
+    /* Dark mode styles would go here if implementing */
+    /* Currently maintaining light theme for enterprise branding */
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .animate-on-scroll {
+        animation: none !important;
+    }
+}
+
+/* Focus styles for accessibility */
+@media (prefers-reduced-motion: no-preference) {
+    .btn:focus,
+    .nav-link:focus,
+    input:focus,
+    textarea:focus,
+    button:focus {
+        outline: 2px solid var(--green-500);
+        outline-offset: 2px;
+        transition: outline 0.2s ease;
+    }
+}
+
+/* Landscape mobile orientation */
+@media (max-width: 767px) and (orientation: landscape) {
+    .hero {
+        padding: var(--spacing-lg) 0;
+    }
+    
+    .hero-title {
+        font-size: 1.75rem;
+    }
+    
+    .hero-stats {
+        flex-direction: row;
+        justify-content: space-around;
+    }
+    
+    .stat-item {
+        flex: none;
+    }
+    
+    .hero-actions {
+        flex-direction: row;
+        gap: var(--spacing-md);
+    }
+    
+    .hero-actions .btn {
+        width: auto;
+        flex: 1;
+    }
+}
