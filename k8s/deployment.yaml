@@ -31,6 +31,19 @@ spec:
         prometheus.io/port: "5000"
         prometheus.io/path: "/health"
     spec:
+      initContainers:
+      - name: fix-permissions
+        image: busybox:1.35
+        command: ['sh', '-c', 'chown -R 1000:1000 /app/database /app/logs /app/instance']
+        volumeMounts:
+        - name: database-volume
+          mountPath: /app/database
+        - name: logs-volume
+          mountPath: /app/logs
+        - name: instance-volume
+          mountPath: /app/instance
+        securityContext:
+          runAsUser: 0
       containers:
       - name: kubeopt-website
         image: {{IMAGE_TAG}}
