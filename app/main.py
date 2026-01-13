@@ -183,10 +183,6 @@ def api_analytics_pageview():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/health')
-def health_check():
-    """Health check endpoint for Kubernetes probes"""
-    return jsonify({'status': 'healthy', 'timestamp': datetime.utcnow().isoformat()}), 200
 
 @app.route('/api/analytics/event', methods=['POST'])
 def api_analytics_event():
