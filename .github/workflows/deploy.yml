@@ -26,9 +26,9 @@ permissions:
   contents: read
 
 env:
-  AZURE_RESOURCE_GROUP: rg-kubeopt-com
-  AZURE_CLUSTER_NAME: aks-kubeopt-com
-  AZURE_REGISTRY_NAME: acrkubeoptio
+  AZURE_RESOURCE_GROUP: rg-kubeopt-com-prod
+  AZURE_CLUSTER_NAME: aks-kubeopt-com-prod
+  AZURE_REGISTRY_NAME: acrkubeoptioprod
   KUBERNETES_NAMESPACE: kubeopt-com
 
 jobs:

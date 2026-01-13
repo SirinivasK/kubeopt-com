@@ -27,8 +27,8 @@ permissions:
   contents: read
 
 env:
-  AZURE_RESOURCE_GROUP: rg-kubeopt-com
-  AZURE_CLUSTER_NAME: aks-kubeopt-com
+  AZURE_RESOURCE_GROUP: rg-kubeopt-com-prod
+  AZURE_CLUSTER_NAME: aks-kubeopt-com-prod
 
 jobs:
   # Plan Terraform Changes (No approval needed)
