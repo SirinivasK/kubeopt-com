@@ -1,22 +1,138 @@
-name: Deploy to AKS
+name: Deploy kubeopt.com
 
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'deploy'
+        type: choice
+        options:
+        - deploy
+        - stop
+        - start
+        - destroy
 
 env:
-  REGISTRY: acrkubeoptioprod.azurecr.io
-  IMAGE_NAME: kubeopt-com
-  AKS_CLUSTER_NAME: aks-kubeopt-com-prod
-  AKS_RESOURCE_GROUP: rg-kubeopt-com-prod
-  NAMESPACE: kubeopt-com
+  AZURE_RESOURCE_GROUP: rg-kubeopt-com
+  AZURE_CLUSTER_NAME: aks-kubeopt-com
+  AZURE_REGISTRY_NAME: acrkubeoptio
+  KUBERNETES_NAMESPACE: kubeopt-com
 
 jobs:
-  build-and-deploy:
+  # Plan Terraform Changes (No approval needed)
+  terraform-plan:
     runs-on: ubuntu-latest
-    environment: production  # Requires approval and uses production secrets
+    if: github.event_name == 'push' || github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    outputs:
+      plan_output: ${{ steps.plan.outputs.stdout }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.6.0
+        terraform_wrapper: false
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Terraform Init
+      working-directory: ./terraform
+      run: terraform init
+
+    - name: Terraform Plan
+      id: plan
+      working-directory: ./terraform
+      run: |
+        terraform plan -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -no-color
+      continue-on-error: true
+
+    - name: Comment PR with Plan
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const output = `
+          ## Terraform Plan 📋
+          
+          \`\`\`
+          ${{ steps.plan.outputs.stdout }}
+          \`\`\`
+          
+          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*
+          `;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })
+
+  # Infrastructure Deployment (Requires tf-prod approval)
+  terraform-apply:
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && contains(fromJson('["deploy", "destroy"]'), github.event.inputs.action))
+    environment: tf-prod  # 🔒 APPROVAL REQUIRED FOR INFRASTRUCTURE
+    outputs:
+      infrastructure_ready: ${{ steps.apply.outputs.success }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.6.0
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Terraform Init
+      working-directory: ./terraform
+      run: terraform init
+
+    - name: Terraform Apply
+      id: apply
+      if: github.event.inputs.action != 'destroy'
+      working-directory: ./terraform
+      run: |
+        terraform apply -auto-approve -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+        echo "success=true" >> $GITHUB_OUTPUT
+
+    - name: Terraform Destroy
+      if: github.event.inputs.action == 'destroy'
+      working-directory: ./terraform
+      run: terraform destroy -auto-approve -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+
+    - name: Output Infrastructure Status
+      run: |
+        echo "🏗️ Infrastructure deployment completed"
+        echo "📊 Estimated monthly cost: $25-35"
+        az resource list --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --output table
+
+  # Build Application (No approval needed)
+  build:
+    runs-on: ubuntu-latest
+    needs: terraform-apply
+    if: needs.terraform-apply.outputs.infrastructure_ready == 'true' && github.event.inputs.action != 'destroy'
+    outputs:
+      image_tag: ${{ steps.build.outputs.image_tag }}
     
     steps:
     - name: Checkout code
@@ -25,44 +141,54 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS_PROD }}
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Login to Azure Container Registry
-      run: |
-        az acr login --name acrkubeoptioprod
-
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=sha,prefix={{branch}}-
-          type=raw,value=latest,enable={{is_default_branch}}
-
     - name: Build and push Docker image
-      uses: docker/build-push-action@v5
+      id: build
+      run: |
+        # Login to ACR
+        az acr login --name ${{ env.AZURE_REGISTRY_NAME }}
+        
+        # Build images
+        IMAGE_TAG="${{ github.sha }}"
+        docker build -t ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/kubeopt-website:${IMAGE_TAG} .
+        docker build -t ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/kubeopt-website:latest .
+        
+        # Push images
+        docker push ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/kubeopt-website:${IMAGE_TAG}
+        docker push ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/kubeopt-website:latest
+        
+        echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+        echo "✅ Image built and pushed: ${IMAGE_TAG}"
+
+  # Production Deployment (Requires prod approval)
+  deploy-prod:
+    runs-on: ubuntu-latest
+    needs: [terraform-apply, build]
+    if: needs.build.outputs.image_tag != ''
+    environment: prod  # 🔒 APPROVAL REQUIRED FOR PRODUCTION
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: azure/login@v1
       with:
-        context: .
-        platforms: linux/amd64
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Get AKS credentials
       run: |
-        az aks get-credentials --resource-group ${{ env.AKS_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }}
+        az aks get-credentials \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --name ${{ env.AZURE_CLUSTER_NAME }} \
+          --overwrite-existing
 
     - name: Install kubelogin
       run: |
-        # Download and install kubelogin
         curl -LO https://github.com/Azure/kubelogin/releases/download/v0.0.32/kubelogin-linux-amd64.zip
         unzip kubelogin-linux-amd64.zip
         sudo mv bin/linux_amd64/kubelogin /usr/local/bin/
@@ -72,9 +198,15 @@ jobs:
       run: |
         kubelogin convert-kubeconfig -l azurecli
 
+    - name: Wait for cluster to be ready
+      run: |
+        echo "⏳ Waiting for cluster nodes to be ready..."
+        kubectl wait --for=condition=Ready nodes --all --timeout=300s
+        kubectl get nodes
+
     - name: Create namespace if not exists
       run: |
-        kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+        kubectl create namespace ${{ env.KUBERNETES_NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
 
     - name: Install NGINX Ingress Controller
       run: |
@@ -114,42 +246,40 @@ jobs:
     - name: Create or update secrets
       run: |
         # Delete existing secret if it exists (ignore errors)
-        kubectl delete secret kubeopt-secrets -n ${{ env.NAMESPACE }} --ignore-not-found=true
+        kubectl delete secret kubeopt-secrets -n ${{ env.KUBERNETES_NAMESPACE }} --ignore-not-found=true
         
         # Create new secret
         kubectl create secret generic kubeopt-secrets \
-          --namespace=${{ env.NAMESPACE }} \
+          --namespace=${{ env.KUBERNETES_NAMESPACE }} \
           --from-literal=secret-key="${{ secrets.FLASK_SECRET_KEY }}"
 
-    - name: Deploy to AKS
+    - name: Deploy application
       run: |
-        # Replace image tag in deployment manifest
-        sed -i "s|{{IMAGE_TAG}}|${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}|g" k8s/deployment.yaml
+        echo "🚀 Deploying kubeopt.com to production..."
         
-        # Apply Kubernetes manifests
-        kubectl apply -f k8s/ -n ${{ env.NAMESPACE }}
+        # Apply base manifests
+        kubectl apply -f k8s/secrets.yaml
+        kubectl apply -f k8s/storage.yaml
         
-        # Wait for deployment to be available (much faster with proper health checks)
-        kubectl wait --for=condition=available --timeout=120s deployment/kubeopt-website -n ${{ env.NAMESPACE }}
+        # Deploy with specific image tag
+        sed "s|{{IMAGE_TAG}}|${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/kubeopt-website:${{ needs.build.outputs.image_tag }}|g" k8s/deployment.yaml | kubectl apply -f -
         
-        # Verify pods are running and ready
-        kubectl get pods -n ${{ env.NAMESPACE }} -l app=kubeopt-website
-        
-        # Quick health check
-        kubectl describe deployment kubeopt-website -n ${{ env.NAMESPACE }} | grep -E "(Replicas|Conditions)"
+        kubectl apply -f k8s/service.yaml
+        kubectl apply -f k8s/ingress.yaml
 
-    - name: Get service info
+    - name: Verify deployment
       run: |
-        echo "Getting service information..."
-        kubectl get services -n ${{ env.NAMESPACE }}
-        kubectl get ingress -n ${{ env.NAMESPACE }} || echo "No ingress found"
+        echo "🔍 Verifying deployment..."
+        kubectl rollout status deployment/kubeopt-website -n ${{ env.KUBERNETES_NAMESPACE }} --timeout=300s
         
-        echo "Getting pod status..."
-        kubectl get pods -n ${{ env.NAMESPACE }}
+        echo "📋 Deployment status:"
+        kubectl get pods -n ${{ env.KUBERNETES_NAMESPACE }} -o wide
+        kubectl get services -n ${{ env.KUBERNETES_NAMESPACE }}
+        kubectl get ingress -n ${{ env.KUBERNETES_NAMESPACE }}
         
-        echo "Getting ingress controller external IP..."
-        EXTERNAL_IP=$(kubectl get svc ingress-nginx-controller -n ingress-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || echo "Not available yet")
-        echo "External IP: $EXTERNAL_IP"
+        # Get external IP
+        echo "🌐 External access:"
+        kubectl get ingress -n ${{ env.KUBERNETES_NAMESPACE }} -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}' || echo "IP pending..."
 
     - name: SSL Certificate Management and Verification
       run: |
@@ -160,37 +290,27 @@ jobs:
         
         # Check certificate status
         echo "Checking SSL certificate status..."
-        kubectl get certificates -n ${{ env.NAMESPACE }} || echo "No certificates found yet"
+        kubectl get certificates -n ${{ env.KUBERNETES_NAMESPACE }} || echo "No certificates found yet"
         
         # Check for any failed challenges
         echo "Checking ACME challenges..."
-        if kubectl get challenges -n ${{ env.NAMESPACE }} 2>/dev/null; then
+        if kubectl get challenges -n ${{ env.KUBERNETES_NAMESPACE }} 2>/dev/null; then
           echo "Found ACME challenges, checking status..."
-          kubectl describe challenges -n ${{ env.NAMESPACE }}
+          kubectl describe challenges -n ${{ env.KUBERNETES_NAMESPACE }}
         else
           echo "No active ACME challenges"
         fi
         
         # Check cert-manager logs if certificates are not ready
-        CERT_READY=$(kubectl get certificate kubeopt-com-tls -n ${{ env.NAMESPACE }} -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo "False")
+        CERT_READY=$(kubectl get certificate kubeopt-com-tls -n ${{ env.KUBERNETES_NAMESPACE }} -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo "False")
         
         if [ "$CERT_READY" != "True" ]; then
           echo "⚠️ SSL certificate not ready yet, this is normal for new deployments"
           echo "Checking cert-manager logs for issues..."
           kubectl logs -n cert-manager deployment/cert-manager --tail=20 || echo "Could not fetch cert-manager logs"
           
-          # Check if there are any limit range issues
-          echo "Checking for resource limit issues..."
-          kubectl get limitrange -n ${{ env.NAMESPACE }}
-          kubectl describe limitrange -n ${{ env.NAMESPACE }} 2>/dev/null || echo "No limit ranges found"
-          
-          # Force certificate renewal if stuck
-          echo "Attempting to force certificate renewal..."
-          kubectl delete challenges --all -n ${{ env.NAMESPACE }} --ignore-not-found=true
-          kubectl annotate ingress kubeopt-website-ingress -n ${{ env.NAMESPACE }} cert-manager.io/cluster-issuer=letsencrypt-prod --overwrite
-          
           echo "SSL certificate generation initiated. It may take 5-10 minutes to complete."
-          echo "Check certificate status with: kubectl get certificates -n ${{ env.NAMESPACE }}"
+          echo "Check certificate status with: kubectl get certificates -n ${{ env.KUBERNETES_NAMESPACE }}"
         else
           echo "✅ SSL certificate is ready!"
         fi
@@ -246,8 +366,126 @@ jobs:
           echo "The load balancer may take a few minutes to assign an external IP."
         fi
 
+  # Environment Management (Requires prod approval for stop/start)
+  manage-environment:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && contains(fromJson('["stop", "start"]'), github.event.inputs.action)
+    environment: prod  # 🔒 APPROVAL REQUIRED
+    
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Get AKS credentials
+      run: |
+        az aks get-credentials \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --name ${{ env.AZURE_CLUSTER_NAME }} \
+          --overwrite-existing
+
+    - name: Install kubelogin
+      run: |
+        curl -LO https://github.com/Azure/kubelogin/releases/download/v0.0.32/kubelogin-linux-amd64.zip
+        unzip kubelogin-linux-amd64.zip
+        sudo mv bin/linux_amd64/kubelogin /usr/local/bin/
+        rm -rf kubelogin-linux-amd64.zip bin/
+
+    - name: Convert kubeconfig for Azure AD
+      run: |
+        kubelogin convert-kubeconfig -l azurecli
+
+    - name: Stop Environment
+      if: github.event.inputs.action == 'stop'
+      run: |
+        echo "🛑 Stopping environment to save costs..."
+        
+        # Show current status
+        kubectl get nodes || echo "No nodes available"
+        kubectl get pods -n ${{ env.KUBERNETES_NAMESPACE }} || echo "No pods in namespace"
+        
+        # Scale down workloads
+        kubectl scale deployment kubeopt-website -n ${{ env.KUBERNETES_NAMESPACE }} --replicas=0 || true
+        
+        # Scale down node pools
+        az aks nodepool scale \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --cluster-name ${{ env.AZURE_CLUSTER_NAME }} \
+          --name default \
+          --node-count 0
+          
+        # Scale spot pool if exists
+        az aks nodepool scale \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --cluster-name ${{ env.AZURE_CLUSTER_NAME }} \
+          --name spot \
+          --node-count 0 2>/dev/null || echo "No spot pool found"
+        
+        echo "✅ Environment stopped"
+        echo "💰 Monthly savings: ~$25-30"
+        echo "💡 Only paying for: Container Registry ($5) + Load Balancer ($18) + Storage (~$2)"
+
+    - name: Start Environment
+      if: github.event.inputs.action == 'start'
+      run: |
+        echo "🚀 Starting environment..."
+        
+        # Scale up node pools
+        az aks nodepool scale \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --cluster-name ${{ env.AZURE_CLUSTER_NAME }} \
+          --name default \
+          --node-count 1
+        
+        # Wait for nodes
+        echo "⏳ Waiting for nodes to be ready..."
+        kubectl wait --for=condition=Ready nodes --all --timeout=600s
+        
+        # Scale up workloads
+        kubectl scale deployment kubeopt-website -n ${{ env.KUBERNETES_NAMESPACE }} --replicas=1
+        
+        # Wait for deployment
+        kubectl rollout status deployment/kubeopt-website -n ${{ env.KUBERNETES_NAMESPACE }} --timeout=300s
+        
+        echo "✅ Environment started and ready!"
+        kubectl get nodes
+        kubectl get pods -n ${{ env.KUBERNETES_NAMESPACE }}
+
+  # Cost Monitoring and SSL Check
+  monitoring:
+    runs-on: ubuntu-latest
+    if: always() && (github.event_name == 'push' || github.event.inputs.action == 'deploy')
+    needs: [deploy-prod]
+    
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Cost Report
+      run: |
+        echo "📊 Cost Monitoring Report"
+        echo "========================"
+        
+        # Current usage
+        echo "💰 Current month usage:"
+        az consumption usage list --top 5 --query "[?contains(instanceName, 'kubeopt')].{Resource:instanceName, Cost:pretaxCost}" --output table 2>/dev/null || echo "Usage data not available yet"
+        
+        # Resource count
+        echo ""
+        echo "📋 Active resources:"
+        az resource list --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "length(@)" --output tsv | xargs echo "Total resources:"
+        
+        echo ""
+        echo "💡 Cost optimization tips:"
+        echo "• Use 'stop' action when not testing to save ~$25-30/month"
+        echo "• Monitor with: az consumption usage list --top 10"
+        echo "• Budget alert set at $50/month"
+
     - name: Cleanup old images (optional)
       if: github.ref == 'refs/heads/main'
       run: |
         # Keep only last 5 images to save ACR storage costs
-        az acr repository show-tags --name acrkubeoptioprod --repository ${{ env.IMAGE_NAME }} --orderby time_desc --output tsv | tail -n +6 | xargs -I {} az acr repository delete --name acrkubeoptioprod --image ${{ env.IMAGE_NAME }}:{} --yes || true
+        az acr repository show-tags --name ${{ env.AZURE_REGISTRY_NAME }} --repository kubeopt-website --orderby time_desc --output tsv | tail -n +6 | xargs -I {} az acr repository delete --name ${{ env.AZURE_REGISTRY_NAME }} --image kubeopt-website:{} --yes || true
