@@ -117,22 +117,61 @@ jobs:
       run: |
         kubectl create namespace ${{ env.KUBERNETES_NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
 
-    - name: Install NGINX Ingress Controller
+    - name: Install NGINX Ingress Controller with Static IP
       run: |
         # Install NGINX Ingress Controller if not already installed
         if ! kubectl get namespace ingress-nginx &> /dev/null; then
           echo "Installing NGINX Ingress Controller..."
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/cloud/deploy.yaml
           
-          # Wait for ingress controller to be ready
-          echo "Waiting for ingress controller to be ready..."
+          # Wait for controller deployment to be available
+          echo "Waiting for ingress controller deployment..."
           kubectl wait --namespace ingress-nginx \
-            --for=condition=ready pod \
-            --selector=app.kubernetes.io/component=controller \
+            --for=condition=available deployment/ingress-nginx-controller \
             --timeout=300s
         else
-          echo "NGINX Ingress Controller already installed"
+          echo "NGINX Ingress Controller already exists"
         fi
+        
+        # Configure static IP (works for both new and existing installations)
+        echo "Configuring static IP for ingress controller..."
+        
+        # First try West Europe (current location)
+        STATIC_IP=$(az network public-ip show \
+          --resource-group MC_${{ env.AZURE_RESOURCE_GROUP }}_${{ env.AZURE_CLUSTER_NAME }}_westeurope \
+          --name aks-kubeopt-com-prod-public-ip \
+          --query ipAddress --output tsv 2>/dev/null || echo "")
+        
+        # Fallback to East US if not found
+        if [ -z "$STATIC_IP" ]; then
+          STATIC_IP=$(az network public-ip show \
+            --resource-group MC_${{ env.AZURE_RESOURCE_GROUP }}_${{ env.AZURE_CLUSTER_NAME }}_eastus \
+            --name aks-kubeopt-com-prod-public-ip \
+            --query ipAddress --output tsv 2>/dev/null || echo "")
+        fi
+        
+        if [ ! -z "$STATIC_IP" ] && [ "$STATIC_IP" != "null" ]; then
+          echo "✅ Found static IP: $STATIC_IP"
+          
+          # Patch the ingress controller service to use static IP
+          kubectl patch service ingress-nginx-controller \
+            --namespace ingress-nginx \
+            --patch="{\"spec\":{\"loadBalancerIP\":\"$STATIC_IP\"}}"
+          
+          echo "✅ NGINX Ingress Controller configured with static IP: $STATIC_IP"
+          echo "🌐 Website will be accessible at: https://kubeopt.com"
+          echo "📍 DNS should point to: $STATIC_IP"
+        else
+          echo "⚠️ Static IP not found, using dynamic IP"
+          echo "💡 Check terraform static IP resource exists"
+        fi
+        
+        # Wait for ingress controller to be ready
+        echo "Waiting for ingress controller pods to be ready..."
+        kubectl wait --namespace ingress-nginx \
+          --for=condition=ready pod \
+          --selector=app.kubernetes.io/component=controller \
+          --timeout=300s
 
     - name: Install cert-manager
       run: |
@@ -229,7 +268,17 @@ jobs:
         # Wait for service to be ready
         sleep 30
         
-        # Get the external IP
+        # Get the static IP that should be configured
+        STATIC_IP=$(az network public-ip show \
+          --resource-group MC_${{ env.AZURE_RESOURCE_GROUP }}_${{ env.AZURE_CLUSTER_NAME }}_westeurope \
+          --name aks-kubeopt-com-prod-public-ip \
+          --query ipAddress --output tsv 2>/dev/null || \
+          az network public-ip show \
+          --resource-group MC_${{ env.AZURE_RESOURCE_GROUP }}_${{ env.AZURE_CLUSTER_NAME }}_eastus \
+          --name aks-kubeopt-com-prod-public-ip \
+          --query ipAddress --output tsv 2>/dev/null)
+        
+        # Also get the actual external IP from the service
         EXTERNAL_IP=$(kubectl get svc ingress-nginx-controller -n ingress-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null)
         
         if [ ! -z "$EXTERNAL_IP" ] && [ "$EXTERNAL_IP" != "null" ]; then
@@ -266,7 +315,14 @@ jobs:
           echo ""
           echo "================================================"
           echo "✅ External IP available: $EXTERNAL_IP"
-          echo "🌐 Update your DNS to point kubeopt.com to $EXTERNAL_IP"
+          if [ "$STATIC_IP" = "$EXTERNAL_IP" ]; then
+            echo "✅ Static IP successfully configured: $STATIC_IP"
+            echo "🎉 DNS is permanent - no updates needed on future deployments!"
+          else
+            echo "⚠️ Static IP: $STATIC_IP, Actual IP: $EXTERNAL_IP"
+            echo "💡 Static IP configuration may need time to apply"
+          fi
+          echo "🌐 DNS should point kubeopt.com to: $STATIC_IP"
           echo "🔒 SSL certificates will be automatically generated by Let's Encrypt"
           echo "📱 Test your site: https://kubeopt.com"
           echo "================================================"
